@@ -84,4 +84,3 @@ To generate a spinal risk score prediction....
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-```
