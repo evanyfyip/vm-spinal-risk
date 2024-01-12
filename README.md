@@ -17,6 +17,12 @@ This repository contains the code and resources for developing a predictive mode
 
 ## Installation
 
+If desired, create a new conda environment for the project.
+```
+conda create -n vm-spinal-risk python=3.10
+conda activate vm-spinal-risk
+```
+
 1. Clone the repository:
 
    ```bash
