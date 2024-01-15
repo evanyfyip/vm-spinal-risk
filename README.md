@@ -19,7 +19,7 @@ This repository contains the code and resources for developing a predictive mode
 
 If desired, create a new conda environment for the project.
 ```
-conda create -n vm-spinal-risk python=3.10
+conda create -n vm-spinal-risk python=3.8.18
 conda activate vm-spinal-risk
 ```
 
@@ -43,6 +43,14 @@ To use the spinal risk assessment model, follow these steps:
 1. **Preprocess Data:**
    - Prepare your dataset following the format specified in the `data/` directory.
    - Utilize the provided data preprocessing scripts if necessary.
+   a. Navigate to `vm-spinal-risk`
+      ```bash
+      cd vm-spinal-risk
+      ```
+   b. Run the data_processing.py script
+      ```bash
+      python utilities/data_processing.py
+      ```
 
 2. **Train Model:**
    - Run the model training script with your preprocessed data:
