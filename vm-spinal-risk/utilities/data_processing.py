@@ -1,4 +1,11 @@
+import os
+import time
+import requests
+
+from dotenv import load_dotenv
+import numpy as np
 import pandas as pd
+
 
 def filter_df_by_attention_check(data, col_start, col_end, tol):
     """
@@ -136,3 +143,78 @@ def get_odi_score(df, odi_cols=odi_questions):
     final_df = df[np.all(df[odi_cols] >= 1, axis=1) & np.all(df[odi_cols] <= 5, axis=1)].copy()
     final_df['odi_score'] = np.sum(final_df[odi_cols], axis=1)
     return final_df
+
+
+def get_location_information(df):
+  """Using `zip_code` column in dataframe
+  pulls 'city', 'state', 'state_code', 'province', 'province_code', 
+  'latitude', 'longitude' using the zipcodebase API.
+
+  Parameters
+  ----------
+  df : pd.DataFrame
+      The raw normative ODI dataframe
+
+  Returns
+  -------
+  pd.DataFrame
+      A Pandas DataFrame with the extracted location information.
+  """
+  # Clean up the zipcode
+  df['zip_code'] = df['zip_code'].astype(str).apply(lambda code: code[:-2])
+
+  load_dotenv()
+  zipcode_key = os.getenv('ZIPCODE_API_KEY')
+
+  # Extracting the state from the zipcodes
+  headers = { 
+    "apikey": zipcode_key
+  }
+
+  pause_duration = 0.5
+  all_results = []
+  for code in df['zip_code']:
+    params = (
+      ("codes",f"{code}"),
+      ("country", "US")
+    );
+
+    response = requests.get('https://app.zipcodebase.com/api/v1/search', headers=headers, params=params).json()
+    if not isinstance(response['results'], list):
+      all_results.append(response['results'][code])
+    else:
+      print(f"Failed to extract zipcode for {code}")
+
+    # Throttling the api
+    time.sleep(0.001)
+
+  final_results = [result[0] for result in all_results]
+  locations_df = pd.DataFrame(final_results)
+  # reduce to only distinct rows
+  locations_df = locations_df.drop_duplicates().reset_index().drop(columns='index')
+
+  # joining dataframes
+  relevant_cols = ['postal_code', 'city', 'state', 'state_code', 'province', 'province_code', 'latitude', 'longitude']
+  odi_loc_df = df.merge(locations_df[relevant_cols], how='left', left_on='zip_code', right_on='postal_code')
+  return odi_loc_df
+
+
+def main():
+    # Loading the data
+    odi_df = pd.read_csv('./data/NormativeODI_DATA_2024-01-04_1611.csv')
+
+    # Transforming features
+    odi_df['height_m'] = odi_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
+    odi_df['weight_kg'] = odi_df.weight_in_pounds.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    odi_df['bmi'] = odi_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
+    odi_df = get_age_ranges(odi_df, age_column='age')
+    odi_df = get_odi_score(odi_df)
+    odi_df = get_location_information(odi_df)
+
+    # Renaming columns
+    odi_df = odi_df.rename(columns={"how_physically_demanding_i": "occupation_demands", "have_you_ever_experienced": "lbp", "how_have_you_addressed_add": "lbp_treatment"})
+    odi_df = odi_df.drop(columns=['redcap_survey_identifier', 'assessment_of_back_pain_in_people_who_never_had_sp_timestamp'])
+    odi_df.to_csv('./data/normative_odi_processed.csv', index=False)
+
+if __name__ == "__main__":
+    main()
