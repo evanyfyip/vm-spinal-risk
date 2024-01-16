@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 
-def filter_df_by_attention_check(data, col_start, col_end, tol):
+def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
     """
     Filter a pandas data frame of survey responses for rows where the attention check is passed.
 
@@ -25,7 +25,11 @@ def filter_df_by_attention_check(data, col_start, col_end, tol):
     subset = data.iloc[:, col_start:col_end]
     result = (subset == 1).sum(axis=1) == tol
     print(f"{result.mean()*100:.2f} percent of responses passed the attention check.")
-    return subset[result]
+    if remove:
+        return subset[result]
+    else:
+        data['pass_att_check'] = result
+        return data
 
 
 height_registry = {
