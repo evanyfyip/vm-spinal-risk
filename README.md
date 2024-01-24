@@ -19,7 +19,7 @@ This repository contains the code and resources for developing a predictive mode
 
 If desired, create a new conda environment for the project.
 ```
-conda create -n vm-spinal-risk python=3.8.18
+conda create -n vm-spinal-risk python=3.8.18 -y
 conda activate vm-spinal-risk
 ```
 
