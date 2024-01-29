@@ -2,10 +2,10 @@ import os
 import time
 import requests
 
-from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 
+from dotenv import load_dotenv
 
 def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
     """
@@ -202,12 +202,42 @@ def get_location_information(df):
   odi_loc_df = df.merge(locations_df[relevant_cols], how='left', left_on='zip_code', right_on='postal_code')
   return odi_loc_df
 
+dospert_registry = {
+    "ethical": [6, 9, 10, 16, 29, 30],
+    "financial": [12, 4, 18, 3, 14, 8],
+    "health/safety": [5, 15, 17, 20, 23, 26],
+    "recreational": [2, 11, 13, 19, 24, 25],
+    "social": [1, 7, 21, 22, 27, 28]
+    }
+
+def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
+    """
+    args:
+        df (pd.DataFrame): dataframe of survey responses to the survey
+        idx_start (int): index of the column where the DOSPERT questions start
+
+    returns:
+        pd.DataFrame - cleaned dataframe with the dospert subscale scores of each response
+    """
+
+    # obtain the sum for each dospert subscale
+    for category, idx_list in dospert_registry.items():
+        subscale_name = "dospert_" + category
+        df[subscale_name] = df.iloc[:, [_+idx_start-1 for _ in idx_list]].sum(axis = 1)
+                
+    # drop the original dospert columns since we do not need them anymore
+    result = df.drop(df.iloc[:, idx_start:idx_start + 30], axis = 1)
+    return result
 
 def main():
     # Loading the data
     odi_df = pd.read_csv('./data/NormativeODI_DATA_2024-01-04_1611.csv')
 
     # Transforming features
+
+    # second argument may change based on how the data looks, respecify the index where the dospert questions start.
+    # odi_df = get_dospert_scores(odi_df, 60)
+    
     odi_df['height_m'] = odi_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
     odi_df['weight_kg'] = odi_df.weight_in_pounds.apply(lambda h: get_weight_value(value=h, unit='metric'))
     odi_df['bmi'] = odi_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
