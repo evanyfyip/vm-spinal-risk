@@ -177,7 +177,7 @@ def get_location_information(df):
 
   pause_duration = 0.5
   all_results = []
-  for code in df['zip_code']:
+  for i, code in enumerate(df['zip_code']):
     params = (
       ("codes",f"{code}"),
       ("country", "US")
@@ -228,6 +228,59 @@ def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
     # drop the original dospert columns since we do not need them anymore
     result = df.drop(df.iloc[:, idx_start:idx_start + 30], axis = 1)
     return result
+  
+  
+def get_fips_from_lat_lon(df):
+    """
+    Retrieves FIPS codes for given latitude and longitude coordinates using the FCC Geo API.
+
+    Parameters:
+    - df (pandas.DataFrame): DataFrame containing 'latitude' and 'longitude' columns.
+
+    Returns:
+    - List[str]: List of FIPS codes corresponding to the input coordinates.
+    """
+    all_results = []
+    for i, row in enumerate(df[['latitude', 'longitude']].iterrows()):
+        params = (
+            ("latitude", row[1]['latitude']),
+            ("longitude", row[1]['longitude']),
+            ("censusYear", "2020"),
+            ("format", "json")
+        )
+        response = requests.get('https://geo.fcc.gov/api/census/block/find', params=params).json()
+
+        if response['status'] == 'OK':
+            all_results.append(response['Block']['FIPS'])
+        else:
+            all_results.append(None)
+            print(f"Failed to extract FIPS")
+    fips12 = []
+    for result in all_results:
+        if result is not None:
+            result = result.strip()
+            fips12.append(result[:-3])
+        else:
+            fips12.append('')
+    return fips12
+
+def get_adi_score(df):
+    """
+    Adds ADI (Area Deprivation Index) scores to a DataFrame based on FIPS codes.
+
+    Parameters:
+    - df (pandas.DataFrame): DataFrame containing 'latitude' and 'longitude' columns.
+
+    Returns:
+    - pandas.DataFrame: Original DataFrame with an additional 'adi' column.
+    """
+    df['fips'] = get_fips_from_lat_lon(df)
+    df['fips'] = df['fips'].astype('string')
+
+    adi_df = pd.read_csv('./data/adi-download/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
+    # Joining adi to df
+    df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
+    return df
 
 def main():
     # Loading the data
@@ -244,6 +297,7 @@ def main():
     odi_df = get_age_ranges(odi_df, age_column='age')
     odi_df = get_odi_score(odi_df)
     odi_df = get_location_information(odi_df)
+    odi_df = get_adi_score(odi_df)
 
     # Renaming columns
     odi_df = odi_df.rename(columns={"how_physically_demanding_i": "occupation_demands", "have_you_ever_experienced": "lbp", "how_have_you_addressed_add": "lbp_treatment"})
