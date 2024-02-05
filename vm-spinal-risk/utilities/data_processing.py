@@ -299,18 +299,16 @@ def get_adi_score(df):
 
 def main():
     # Loading the data
-    odi_df = pd.read_csv('./data/RiskFinal_DATA_2024-01-29_combined.csv')
+    odi_df = pd.read_csv('./data/RiskFinal_DATA_2024-02-05_0017_combined.csv')
 
     # Transforming features
-
     # second argument may change based on how the data looks, respecify the index where the dospert questions start.
-    # odi_df = get_dospert_scores(odi_df, 60)
-    
+    odi_df = get_dospert_scores(odi_df, 60)
     odi_df['height_m'] = odi_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
     odi_df['weight_kg'] = odi_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
     odi_df['bmi'] = odi_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
     odi_df = get_age_ranges(odi_df, age_column='age')
-    # odi_df = get_odi_score(odi_df)
+    # odi_df = get_odi_score(odi_df) - No longer necessary 
     odi_df = get_location_information(odi_df)
     odi_df = get_adi_score(odi_df)
 
