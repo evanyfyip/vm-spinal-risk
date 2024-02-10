@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-import regex as re
+import re
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -389,8 +389,9 @@ def get_spinal_risk_score(df):
         spinal_risk_list.append(spinal_risk_sum)
     
     spinal_risk_scores = np.array(spinal_risk_list)
-    risk_df['spinal_risk_score'] = scale_spinal_risk_score(spinal_risk_scores, risk_df)
-    return risk_df
+    final_df = df.copy()
+    final_df['spinal_risk_score'] = scale_spinal_risk_score(spinal_risk_scores, risk_df)
+    return final_df
 
 def manual_drop_records(df):
     """
@@ -427,11 +428,12 @@ def main():
     processed_df = get_age_ranges(processed_df, age_column='age')
     processed_df = get_location_information(processed_df)
     processed_df = get_adi_score(processed_df)
+    processed_df = get_spinal_risk_score(processed_df)
 
     # Dropping records based on low variance results
     processed_df = manual_drop_records(processed_df)
 
-    # Renaming columns
+    # Write to csv
     processed_df.to_csv('./data/all_risk_processed.csv', index=False)
 
 if __name__ == "__main__":
