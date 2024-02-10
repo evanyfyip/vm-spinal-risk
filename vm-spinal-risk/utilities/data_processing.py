@@ -5,6 +5,7 @@ import regex as re
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import json
 
 from dotenv import load_dotenv
 
@@ -199,9 +200,9 @@ def get_location_information(df, zipcode_col='zipcode'):
 
     response = requests.get('https://app.zipcodebase.com/api/v1/search', headers=headers, params=params).json()
     if not isinstance(response['results'], list):
-      all_results.append(response['results'][code])
+        all_results.append(response['results'][code])
     else:
-      print(f"Failed to extract zipcode for {code}")
+        print(f"Failed to extract zipcode for {code}")
 
     # Throttling the api
     # time.sleep(0.001)
@@ -297,7 +298,6 @@ def get_adi_score(df):
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
 
-
 comp_weights = {'drop': 1.112, 'para': 2.304*1.112, 'death': 2.534*1.112}
 improv_weights = {'exer': 1, 'work': 1.252}
 
@@ -392,24 +392,47 @@ def get_spinal_risk_score(df):
     risk_df['spinal_risk_score'] = scale_spinal_risk_score(spinal_risk_scores, risk_df)
     return risk_df
 
+def manual_drop_records(df):
+    """
+    Remove records specified in '../data/manual_record_drop.json' from the DataFrame.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Input DataFrame.
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame with specified records removed.
+    """
+    with open('./data/manual_record_drop.json', 'r') as f:
+        data = json.load(f)
+
+    df_reset = df.reset_index()
+    final_df = df_reset[~df_reset['index'].isin(data['record_indices'])]
+    final_df = final_df.reset_index().iloc[:, 2:]
+    return final_df
+
+
 def main():
     # Loading the data
-    odi_df = pd.read_csv('./data/RiskFinal_DATA_2024-02-05_0017_combined.csv')
-
+    processed_df = pd.read_csv('./data/RiskFinal_DATA_2024-02-05_0017_combined.csv')
     # Transforming features
     # second argument may change based on how the data looks, respecify the index where the dospert questions start.
-    odi_df = get_dospert_scores(odi_df, 60)
-    odi_df['height_m'] = odi_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
-    odi_df['weight_kg'] = odi_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
-    odi_df['bmi'] = odi_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
-    odi_df = get_age_ranges(odi_df, age_column='age')
-    # odi_df = get_odi_score(odi_df) - No longer necessary 
-    odi_df = get_location_information(odi_df)
-    odi_df = get_adi_score(odi_df)
+    processed_df = get_dospert_scores(processed_df, 60)
+    processed_df['height_m'] = processed_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
+    processed_df['weight_kg'] = processed_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    processed_df['bmi'] = processed_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
+    processed_df = get_age_ranges(processed_df, age_column='age')
+    processed_df = get_location_information(processed_df)
+    processed_df = get_adi_score(processed_df)
+
+    # Dropping records based on low variance results
+    processed_df = manual_drop_records(processed_df)
 
     # Renaming columns
-    odi_df = odi_df.rename(columns={"how_physically_demanding_i": "occupation_demands", "have_you_ever_experienced": "lbp", "how_have_you_addressed_add": "lbp_treatment"})
-    odi_df.to_csv('./data/normative_odi_processed.csv', index=False)
+    processed_df.to_csv('./data/all_risk_processed.csv', index=False)
 
 if __name__ == "__main__":
     main()
