@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-
+import regex as re
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -296,6 +296,101 @@ def get_adi_score(df):
     # Joining adi to df
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
+
+
+comp_weights = {'drop': 1.112, 'para': 2.304*1.112, 'death': 2.534*1.112}
+improv_weights = {'exer': 1, 'work': 1.252}
+
+def scale_spinal_risk_score(risk_scores, df):
+    all_combinations = {'comp_type':[], 'comp_level':[], 'improv_type':[], 'improv_level':[]}
+    for col in df.columns:
+        split_names = col.split("_")
+        match_improv = re.search(r'^(\d+)', split_names[1])
+        match_comp = re.search(r'^(\d+)(\w+)', split_names[2])
+        
+        all_combinations['comp_level'].append(match_comp.group(1))
+        all_combinations['comp_type'].append(match_comp.group(2))
+
+        all_combinations['improv_level'].append(match_improv.group(1))
+        all_combinations['improv_type'].append(split_names[0])
+    all_combos_df = pd.DataFrame(all_combinations)
+
+    # risk_score = (comp_type_weight*comp_value - improv_type_weight*improv_value)/option)
+    all_combos_df['comp_type_weight'] = \
+        np.where(all_combos_df['comp_type'] == 'drop', comp_weights['drop'], 
+            np.where(all_combos_df['comp_type'] =='para', comp_weights['para'], 
+                    np.where(all_combos_df['comp_type'] == 'death', comp_weights['death'], np.nan)))
+
+    all_combos_df['improv_type_weight'] = \
+        np.where(all_combos_df['improv_type'] == 'exer', improv_weights['exer'], 
+            np.where(all_combos_df['improv_type'] =='work', improv_weights['work'], np.nan))
+
+    all_combos_df['comp_level'] = all_combos_df['comp_level'].astype(float)
+    all_combos_df['improv_level'] = all_combos_df['improv_level'].astype(float)
+    all_combos_df['multiplier'] = (all_combos_df['comp_type_weight'] * all_combos_df['comp_level']) - (all_combos_df['improv_type_weight'] * all_combos_df['improv_level'])
+
+    # Computing the min and max possible values for that question, accounting for negative multiplier values
+    all_combos_df['min_option_result'] = np.where(all_combos_df['multiplier'] < 0, all_combos_df['multiplier'] / 1, all_combos_df['multiplier'] / 6)
+    all_combos_df['max_option_result'] = np.where(all_combos_df['multiplier'] < 0, all_combos_df['multiplier'] / 6, all_combos_df['multiplier'] / 1)
+
+    # Computing the overall max and min risk scores
+    risk_max, risk_min = all_combos_df[['min_option_result', 'max_option_result']].sum(axis=0).values
+    spinal_risk_scores_scaled = (risk_scores - risk_min) / (risk_max - risk_min)
+    return spinal_risk_scores_scaled
+
+
+def get_spinal_risk_score(df):
+    spinal_risk_cols = ['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
+        'exer_50improv_90drop', 'exer_90improv_1drop',
+        'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
+        'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
+        'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
+        'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
+        'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
+        'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
+        'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
+        'work_90improv_10para', 'work_90improv_50para',
+        'work_50improv_1death', 'work_50improv_10death',
+        'work_50improv_50death', 'work_90improv_1death',
+        'work_90improv_10death', 'work_90improv_50death']
+    risk_df = df[spinal_risk_cols]
+
+    spinal_risk_list = []
+    split_names = risk_df.columns[0].split("_")
+    improv_list = []
+    comp_list = []
+    comp_type = []
+    improv_type = []
+
+    for col in risk_df.columns:
+        split_names = col.split("_")
+        match_improv = re.search(r'^(\d+)', split_names[1])
+        match_comp = re.search(r'^(\d+)(\w+)', split_names[2])
+        improv_list.append(float(match_improv.group(1)))
+        comp_list.append(float(match_comp.group(1)))
+        if split_names[0] == 'exer':
+            improv_type.append(improv_weights['exer'])
+        elif split_names[0] == 'work':
+            improv_type.append(improv_weights['work'])
+        if match_comp.group(2) == 'drop':
+            comp_type.append(comp_weights['drop'])
+        elif match_comp.group(2) == 'para':
+            comp_type.append(comp_weights['para'])
+        else:
+            comp_type.append(comp_weights['death'])
+
+    for index, row in risk_df.iterrows():
+        spinal_risk_sum = 0 
+        for i in range(len(risk_df.columns)):
+            # Inverting the options
+            option = 6-row[i]
+            col_risk = (comp_type[i] * comp_list[i]  - improv_type[i] * improv_list[i]) / option
+            spinal_risk_sum += col_risk
+        spinal_risk_list.append(spinal_risk_sum)
+    
+    spinal_risk_scores = np.array(spinal_risk_list)
+    risk_df['spinal_risk_score'] = scale_spinal_risk_score(spinal_risk_scores, risk_df)
+    return risk_df
 
 def main():
     # Loading the data
