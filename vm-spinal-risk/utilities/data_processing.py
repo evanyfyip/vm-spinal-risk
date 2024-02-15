@@ -298,8 +298,8 @@ def get_adi_score(df):
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
 
-comp_weights = {'drop': 1.112, 'para': 2.304*1.112, 'death': 2.534*1.112}
-improv_weights = {'exer': 1, 'work': 1.252}
+comp_weights = {'drop': 1.5079778761160827, 'para': 2.178370510624958, 'death': 2.3436498386894566}
+improv_weights = {'exer': 1, 'work': 0.8759812216878448}
 
 def scale_spinal_risk_score(risk_scores, df):
     all_combinations = {'comp_type':[], 'comp_level':[], 'improv_type':[], 'improv_level':[]}
