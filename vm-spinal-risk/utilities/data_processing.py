@@ -355,6 +355,14 @@ def get_spinal_risk_score(df):
         'work_90improv_10death', 'work_90improv_50death']
     risk_df = df[spinal_risk_cols]
 
+    # Drop uncorrelated questions (Spearman < 0.5):
+    # drop_cols = ['exer_50improv_50drop', 'exer_50improv_90drop', 'exer_90improv_90drop',
+    #    'exer_50pain_10death', 'exer_50pain_50death', 'exer_90pain_50death',
+    #    'work_50improv_50drop', 'work_50improv_90drop', 'work_90improv_50drop',
+    #    'work_50improv_50para', 'work_50improv_90para', 'work_90improv_50para',
+    #    'work_50improv_50death', 'work_90improv_50death']
+    # risk_df = risk_df.drop(columns=drop_cols)
+
     spinal_risk_list = []
     split_names = risk_df.columns[0].split("_")
     improv_list = []
