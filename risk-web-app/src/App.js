@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import logo from './logo.svg';
 
 // UI Components
 import Navbar from "./components/NavBar";
@@ -15,6 +14,7 @@ import SurveyResultsPage from './pages/SurveyResultsPage';
 import AdminPage from './pages/AdminPage';
 
 function App() {
+  // Example of how to fetch data from the API
   const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
@@ -34,15 +34,17 @@ function App() {
     //   </header>
     // </div>
     <Router>
-    <Navbar />
-    <Routes>
-      <Route exact path="/home" element={<HomePage />} />
-      <Route path="/survey/patient" element={<SurveyPatientPage />} />
-      <Route path="/survey/surgeon" element={<SurveySurgeonPage />} />
-      <Route path="/survey/results" element={<SurveyResultsPage />} />
-      <Route path="/admin" element={<AdminPage />} />
-    </Routes>
-  </Router>
+      <div>
+        <Navbar />
+        <Routes>
+          <Route exact path="/" element={<HomePage />} />
+          <Route path="/survey/patient" element={<SurveyPatientPage />} />
+          <Route path="/survey/surgeon" element={<SurveySurgeonPage />} />
+          <Route path="/survey/results" element={<SurveyResultsPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

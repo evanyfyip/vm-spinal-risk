@@ -5,17 +5,11 @@ const Navbar = () => {
 	return (
 		<>
 			<Nav>
-				<NavMenu>
-					<NavLink to="/home" activeStyle>
-						Home
-					</NavLink>
-					<NavLink to="/survey/patient" activeStyle>
-						Contact Us
-					</NavLink>
-					<NavLink to="/admin" activeStyle>
-						Blogs
-					</NavLink>
-				</NavMenu>
+				{/* <NavMenu> */}
+					<NavLink to="/" activeStyle>Home</NavLink>
+					<NavLink to="/survey/patient" activeStyle>Survey</NavLink>
+					<NavLink to="/admin" activeStyle>Admin</NavLink>
+				{/* </NavMenu> */}
 			</Nav>
 		</>
 	);
