@@ -298,10 +298,15 @@ def get_adi_score(df):
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
 
-comp_weights = {'drop': 1.112, 'para': 2.304*1.112, 'death': 2.534*1.112}
-improv_weights = {'exer': 1, 'work': 1.252}
+def get_weights():
+    with open('./data/complication_improvement_weights.json', 'r') as f:
+        data = json.load(f)
+    comp_weights = {'drop': data['drop_to_drop'], 'para': data['para_to_drop'], 'death': data['death_to_drop']}
+    improv_weights = {'exer': data['exer_to_work'], 'work': data['work_to_work']}
+    return comp_weights, improv_weights
 
 def scale_spinal_risk_score(risk_scores, df):
+    comp_weights, improv_weights = get_weights()
     all_combinations = {'comp_type':[], 'comp_level':[], 'improv_type':[], 'improv_level':[]}
     for col in df.columns:
         split_names = col.split("_")
@@ -334,12 +339,13 @@ def scale_spinal_risk_score(risk_scores, df):
     all_combos_df['max_option_result'] = np.where(all_combos_df['multiplier'] < 0, all_combos_df['multiplier'] / 6, all_combos_df['multiplier'] / 1)
 
     # Computing the overall max and min risk scores
-    risk_max, risk_min = all_combos_df[['min_option_result', 'max_option_result']].sum(axis=0).values
+    risk_min, risk_max = all_combos_df[['min_option_result', 'max_option_result']].sum(axis=0).values
     spinal_risk_scores_scaled = (risk_scores - risk_min) / (risk_max - risk_min)
     return spinal_risk_scores_scaled
 
 
-def get_spinal_risk_score(df):
+def get_spinal_risk_score(df, scale=True):
+    comp_weights, improv_weights = get_weights()
     spinal_risk_cols = ['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
         'exer_50improv_90drop', 'exer_90improv_1drop',
         'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
@@ -354,6 +360,14 @@ def get_spinal_risk_score(df):
         'work_50improv_50death', 'work_90improv_1death',
         'work_90improv_10death', 'work_90improv_50death']
     risk_df = df[spinal_risk_cols]
+
+    # Drop uncorrelated questions (Spearman < 0.5):
+    # drop_cols = ['exer_50improv_50drop', 'exer_50improv_90drop', 'exer_90improv_90drop',
+    #    'exer_50pain_10death', 'exer_50pain_50death', 'exer_90pain_50death',
+    #    'work_50improv_50drop', 'work_50improv_90drop', 'work_90improv_50drop',
+    #    'work_50improv_50para', 'work_50improv_90para', 'work_90improv_50para',
+    #    'work_50improv_50death', 'work_90improv_50death']
+    # risk_df = risk_df.drop(columns=drop_cols)
 
     spinal_risk_list = []
     split_names = risk_df.columns[0].split("_")
@@ -390,7 +404,10 @@ def get_spinal_risk_score(df):
     
     spinal_risk_scores = np.array(spinal_risk_list)
     final_df = df.copy()
-    final_df['spinal_risk_score'] = scale_spinal_risk_score(spinal_risk_scores, risk_df)
+    if scale:
+        final_df['spinal_risk_score'] = scale_spinal_risk_score(spinal_risk_scores, risk_df)
+    else:
+        final_df['spinal_risk_score'] = spinal_risk_scores
     return final_df
 
 def manual_drop_records(df):
