@@ -3,15 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 
+
 // UI Components
 import Navbar from "./components/NavBar";
-
+import Footer from "./components/footer"
 // Pages
 import HomePage from './pages/HomePage';
 import SurveyPatientPage from './pages/SurveyPatientPage';
 import SurveySurgeonPage from './pages/SurveySurgeonPage';
 import SurveyResultsPage from './pages/SurveyResultsPage';
 import AdminPage from './pages/AdminPage';
+import { FaFlask, FaReact } from 'react-icons/fa';
 
 function App() {
   // Example of how to fetch data from the API
@@ -43,6 +45,8 @@ function App() {
           <Route path="/survey/results" element={<SurveyResultsPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
+        <Footer></Footer>
+
       </div>
     </Router>
   );
