@@ -106,15 +106,13 @@ const surveyJson = {
         }
       ]
     }
-    // AFTER THIS QUESTION, SEND RESULTS TO MODEL THROUGH API AND DISPLAY RESULTS PAGE WITH VISUALS
   ],
   showQuestionNumbers: "on",
-  pageNextText: "Forward",
+  pageNextText: "Next",
   completeText: "Submit",
   showPrevButton: true,
   firstPageIsStarted: true,
-  startSurveyText: "Take the Survey",
-  completedHtml: "Thank you!"
+  startSurveyText: "Take the Survey"
 };
 
 function SurveyPatientPage() {
