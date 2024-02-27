@@ -13,6 +13,7 @@ import SurveyPatientPage from './pages/SurveyPatientPage';
 import SurveySurgeonPage from './pages/SurveySurgeonPage';
 import SurveyResultsPage from './pages/SurveyResultsPage';
 import AdminPage from './pages/AdminPage';
+import AboutPage from './pages/AboutPage';
 import { FaFlask, FaReact } from 'react-icons/fa';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/survey/patient" element={<SurveyPatientPage />} />
           <Route path="/survey/surgeon" element={<SurveySurgeonPage />} />
           <Route path="/survey/results" element={<SurveyResultsPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <Footer></Footer>
