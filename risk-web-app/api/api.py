@@ -12,10 +12,12 @@ def landing_page():
     # return render_template('home.html')
 
 # patient answers preoeration survey including ODI, dospert, etc.
-@app.route("/survey/patient")
+@app.route("/survey/predict", methods=["POST"])
 def survey_patient_page():
-    return
-    # return render_template('survey_patient.html')
+    result = request.get_json(silent=True)
+    print(result)
+    return 'OK, response received.'
+    # return redirect(url_for("index"))
 
 # surgeon will enter values for percent complication and percent improvement
 @app.route("/survey/surgeon")

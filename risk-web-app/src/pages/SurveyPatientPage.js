@@ -3,6 +3,7 @@ import {React, useCallback, useState, useRef } from 'react';
 import 'survey-core/defaultV2.min.css';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
+import axios from 'axios';
 
 const surveyJson = {
   pages: [
@@ -106,15 +107,15 @@ const surveyJson = {
         }
       ]
     }
-    // AFTER THIS QUESTION, SEND RESULTS TO MODEL THROUGH API AND DISPLAY RESULTS PAGE WITH VISUALS
   ],
   showQuestionNumbers: "on",
-  pageNextText: "Forward",
+  pageNextText: "Next",
   completeText: "Submit",
   showPrevButton: true,
   firstPageIsStarted: true,
   startSurveyText: "Take the Survey",
-  completedHtml: "Thank you!"
+  showProgressBar: "top",
+  showCompletedPage: false
 };
 
 function SurveyPatientPage() {
@@ -122,8 +123,19 @@ function SurveyPatientPage() {
   const [surveyResults, setSurveyResults] = useState("");
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
 
+  const sendSurveyResult = (data) => {
+    axios.post('/survey/predict', data)
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error('Error submitting survey:', error);
+      });
+  };
+
   const displayResults = useCallback((sender) => {
     setSurveyResults(JSON.stringify(sender.data, null, 4));
+    sendSurveyResult(sender.data)
     setIsSurveyCompleted(true);
   }, []);
 
