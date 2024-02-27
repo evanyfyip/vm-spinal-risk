@@ -5,7 +5,9 @@ import re
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import pickle
 import json
+from sklearn.preprocessing import PolynomialFeatures
 
 from dotenv import load_dotenv
 
@@ -431,6 +433,44 @@ def manual_drop_records(df):
     final_df = df_reset[~df_reset['index'].isin(data['record_indices'])]
     final_df = final_df.reset_index().iloc[:, 2:]
     return final_df
+
+
+def json_to_df():
+    """Takes the json file and loads it into a pandas dataframe"""
+    pass
+
+def get_data_features(df):
+    """This function expects a pandas dataframe with all of the data features"""
+    features_df = get_dospert_scores(df, 60)
+    features_df['height_m'] = features_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
+    features_df['weight_kg'] = features_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    features_df['bmi'] = features_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
+    features_df = get_age_ranges(features_df, age_column='age')
+    features_df = get_location_information(features_df)
+    features_df = get_adi_score(features_df)
+    features_df = get_spinal_risk_score(features_df)
+    return features_df
+
+def ml_model_prep(df, model_type):
+    """Prepares the data for the ml models
+    df = all_risk_processed pandas dataframe.
+    """
+    # Load the ML data processing pipeline
+    with open('./data/ml_models/ml_pipeline.pkl', 'rb') as f:
+        ml_data_processor = pickle.load(f)
+    ml_df = ml_data_processor.fit(df)
+    transformed_columns = ml_data_processor.get_feature_names_out(input_features=df.columns)
+    ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
+
+    if model_type == 'choice_model':
+        # Insert John's transformations
+        # TODO: Call function here!!!
+
+        pass
+
+    # Additional polynomial transformations
+    ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+    return ml_df
 
 
 def main():
