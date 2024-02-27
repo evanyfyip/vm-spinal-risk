@@ -435,7 +435,6 @@ def get_data_features(df):
     features_df = get_age_ranges(features_df, age_column='age')
     features_df = get_location_information(features_df)
     features_df = get_adi_score(features_df)
-    features_df = get_spinal_risk_score(features_df)
     return features_df
 
 def ml_model_prep(df, model_type):
