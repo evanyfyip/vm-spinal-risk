@@ -5,7 +5,9 @@ import re
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import pickle
 import json
+from sklearn.preprocessing import PolynomialFeatures
 
 from dotenv import load_dotenv
 
@@ -138,16 +140,14 @@ def get_age_ranges(df, age_column):
     df['age_range'] = np.select(conditions, result_values, default=0)
     return df
 
-odi_questions = [
-    'pain_intensity',
-    'personal_care_e_g_washing', 'lifting', 'walking', 'sitting',
-    'standing', 'sleeping', 'social_life', 'travelling',
-    'employment_homemaking'
-]
-def get_odi_score(df, odi_cols=odi_questions):
-    df = df.copy()
-    final_df = df[np.all(df[odi_cols] >= 1, axis=1) & np.all(df[odi_cols] <= 5, axis=1)].copy()
-    final_df['odi_score'] = np.sum(final_df[odi_cols], axis=1)
+def get_odi_score(df):
+    """Uses the odi_ columns to compute the odi_score
+    Returns the dataframe with the odi score
+    """
+    final_df = df.copy()
+    odi_df = final_df.filter(regex='odi_\d+')
+    odi_scores = (odi_df.sum(axis=1) - 1) / 50 * 100
+    final_df['odi_final'] = odi_scores
     return final_df
 
 
@@ -238,7 +238,8 @@ def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
     # obtain the sum for each dospert subscale
     for category, idx_list in dospert_registry.items():
         subscale_name = "dospert_" + category
-        df[subscale_name] = df.iloc[:, [_+idx_start-1 for _ in idx_list]].sum(axis = 1)
+        dospert_cols = ['dospert' + str(num) for num in dospert_registry[category]]
+        df[subscale_name] = df[dospert_cols].sum(axis = 1)
                 
     # drop the original dospert columns since we do not need them anymore
     result = df.drop(df.iloc[:, idx_start:idx_start + 30], axis = 1)
@@ -346,20 +347,7 @@ def scale_spinal_risk_score(risk_scores, df):
 
 def get_spinal_risk_score(df, scale=True):
     comp_weights, improv_weights = get_weights()
-    spinal_risk_cols = ['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
-        'exer_50improv_90drop', 'exer_90improv_1drop',
-        'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
-        'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
-        'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
-        'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
-        'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
-        'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
-        'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
-        'work_90improv_10para', 'work_90improv_50para',
-        'work_50improv_1death', 'work_50improv_10death',
-        'work_50improv_50death', 'work_90improv_1death',
-        'work_90improv_10death', 'work_90improv_50death']
-    risk_df = df[spinal_risk_cols]
+    risk_df = df.filter(regex='work_|exer_')
 
     # Drop uncorrelated questions (Spearman < 0.5):
     # drop_cols = ['exer_50improv_50drop', 'exer_50improv_90drop', 'exer_90improv_90drop',
@@ -431,6 +419,44 @@ def manual_drop_records(df):
     final_df = df_reset[~df_reset['index'].isin(data['record_indices'])]
     final_df = final_df.reset_index().iloc[:, 2:]
     return final_df
+
+
+def json_to_df():
+    """Takes the json file and loads it into a pandas dataframe"""
+    pass
+
+def get_data_features(df):
+    """This function expects a pandas dataframe with all of the data features"""
+    features_df = get_odi_score(df)
+    features_df = get_dospert_scores(df, 60)
+    features_df['height_m'] = features_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
+    features_df['weight_kg'] = features_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    features_df['bmi'] = features_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
+    features_df = get_age_ranges(features_df, age_column='age')
+    features_df = get_location_information(features_df)
+    features_df = get_adi_score(features_df)
+    return features_df
+
+def ml_model_prep(df, model_type):
+    """Prepares the data for the ml models
+    df = all_risk_processed pandas dataframe.
+    """
+    # Load the ML data processing pipeline
+    with open('./data/ml_models/ml_pipeline.pkl', 'rb') as f:
+        ml_data_processor = pickle.load(f)
+    ml_df = ml_data_processor.fit(df)
+    transformed_columns = ml_data_processor.get_feature_names_out(input_features=df.columns)
+    ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
+
+    if model_type == 'choice_model':
+        # Insert John's transformations
+        # TODO: Call function here!!!
+
+        pass
+
+    # Additional polynomial transformations
+    ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+    return ml_df
 
 
 def main():
