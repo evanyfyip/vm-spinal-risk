@@ -174,7 +174,22 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "risk_df = data.filter(regex='exer_|work_').copy()"
+    "<<<<<<< local\n",
+    "risk_df = data.filter(regex='exer_|work_').copy()\n",
+    "=======\n",
+    "risk_df = data[['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',\n",
+    "                'exer_50improv_90drop', 'exer_90improv_1drop', 'exer_90improv_10drop',\n",
+    "                'exer_90improv_50drop', 'exer_90improv_90drop', 'exer_50pain_1death',\n",
+    "                'exer_50pain_10death', 'exer_50pain_50death', 'exer_90pain_1death',\n",
+    "                'exer_90pain_10death', 'exer_90pain_50death', 'work_50improv_1drop',\n",
+    "                'work_50improv_10drop', 'work_50improv_50drop', 'work_50improv_90drop',\n",
+    "                'work_90improv_1drop', 'work_90improv_10drop', 'work_90improv_50drop',\n",
+    "                'work_50improv_1para', 'work_50improv_10para', 'work_50improv_50para',\n",
+    "                'work_50improv_90para', 'work_90improv_1para', 'work_90improv_10para',\n",
+    "                'work_90improv_50para', 'work_50improv_1death', 'work_50improv_10death',\n",
+    "                'work_50improv_50death', 'work_90improv_1death',\n",
+    "                'work_90improv_10death', 'work_90improv_50death']].copy().reset_index(drop=True)\n",
+    ">>>>>>> remote"
    ]
   },
   {
@@ -199,7 +214,7 @@
     "       'work_50improv_1death', 'work_50improv_10death',\n",
     "       'work_50improv_50death', 'work_90improv_1death',\n",
     "       'work_90improv_10death', 'work_90improv_50death', 'att_pass',\n",
-    "       'risk_1_complete','height', 'weight', 'record_id', 'risk_1_timestamp', \n",
+    "       'risk_1_complete','height', 'weight', 'risk_1_timestamp', \n",
     "       'zipcode','age_range', 'postal_code','state_code','city',\n",
     "       'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state'], axis=1)"
    ]
@@ -300,8 +315,13 @@
    "outputs": [],
    "source": [
     "processed_final_df = pd.DataFrame(processed_final, columns=transformed_columns)\n",
+    "<<<<<<< local\n",
+    "processed_final_df['spinal_risk_score'] = data_final['spinal_risk_score']\n",
+    "processed_final_df.to_csv('../data/data_processed/ml_data_processed_final.csv', index=False)\n",
+    "=======\n",
     "processed_final_df['spinal_risk_score'] = data_final['spinal_risk_score'].values\n",
-    "processed_final_df.to_csv('../data/data_processed/ml_data_processed_final.csv', index=False)"
+    "processed_final_df.to_csv('../data/ml_data_processed_final.csv', index=False)\n",
+    ">>>>>>> remote"
    ]
   },
   {
@@ -311,8 +331,13 @@
    "metadata": {},
    "outputs": [],
    "source": [
+    "<<<<<<< local\n",
+    "processed__w_risk_final_df = pd.concat([processed_final_df, risk_df], axis=1)\n",
+    "processed__w_risk_final_df.to_csv('../data/data_processed/ml_data_w_risk_questions_processed_final.csv', index=False)\n",
+    "=======\n",
     "processed_w_risk_final_df = pd.concat([processed_final_df, risk_df], axis=1)\n",
-    "processed__w_risk_final_df.to_csv('../data/data_processed/ml_data_w_risk_questions_processed_final.csv', index=False)"
+    "processed_w_risk_final_df.to_csv('../data/ml_data_w_risk_questions_processed_final.csv', index=False)\n",
+    ">>>>>>> remote"
    ]
   },
   {
