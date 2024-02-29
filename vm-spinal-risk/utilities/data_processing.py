@@ -9,6 +9,8 @@ import pickle
 import json
 from sklearn.preprocessing import PolynomialFeatures
 
+from .drop_unbalanced_features import DropUnbalancedFeatures
+
 from dotenv import load_dotenv
 
 def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
@@ -482,10 +484,9 @@ def choice_model_prep(df, ml_df):
     with open('./data/ml_models/choice_model_preprocessor.pkl', 'rb') as f:
         preprocessor = pickle.load(f)
 
-    preprocessor.fit(data_long)  # Fit the ColumnTransformer to your data
+    processed = preprocessor.transform(data_long)
     transformed_columns = preprocessor.get_feature_names_out(input_features=data_long.columns)
 
-    processed = preprocessor.fit_transform(data_long)
     processed_df = pd.DataFrame(processed, columns=transformed_columns)
     cols = list(processed_df.columns)
     new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
@@ -502,20 +503,38 @@ def ml_model_prep(df, model_type):
     """Prepares the data for the ml models
     df = all_risk_processed pandas dataframe.
     """
+    df_drop = df.drop(['odi_1', 'odi_2', 'odi_3',
+       'odi_4', 'odi_5', 'odi_6', 'odi_7', 'odi_8', 'odi_9', 'odi_10',
+       'exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
+       'exer_50improv_90drop', 'att_check_1', 'exer_90improv_1drop',
+       'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
+       'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
+       'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
+       'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
+       'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
+       'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
+       'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
+       'work_90improv_10para', 'att_check2', 'work_90improv_50para',
+       'work_50improv_1death', 'work_50improv_10death',
+       'work_50improv_50death', 'work_90improv_1death',
+       'work_90improv_10death', 'work_90improv_50death', 'att_pass',
+       'risk_1_complete','height', 'weight', 'record_id', 'risk_1_timestamp', 
+       'zipcode','age_range', 'postal_code','state_code','city',
+       'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state'], axis=1)
     # Load the ML data processing pipeline
     with open('./data/ml_models/ml_pipeline.pkl', 'rb') as f:
         ml_data_processor = pickle.load(f)
-    ml_df = ml_data_processor.fit(df)
-    transformed_columns = ml_data_processor.get_feature_names_out(input_features=df.columns)
+    ml_df = ml_data_processor.transform(df_drop)
+    transformed_columns = ml_data_processor.get_feature_names_out(input_features=df_drop.columns)
     ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
 
     if model_type == 'choice_model':
         choice_ml_df = choice_model_prep(df, ml_df)
         return choice_ml_df
-
-    # Additional polynomial transformations
-    ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
-    return ml_df
+    elif model_type == 'risk_model':
+        # Additional polynomial transformations
+        ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+        return ml_df
 
 
 def main():
