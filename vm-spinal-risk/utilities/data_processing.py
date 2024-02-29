@@ -420,11 +420,6 @@ def manual_drop_records(df):
     final_df = final_df.reset_index().iloc[:, 2:]
     return final_df
 
-
-def json_to_df():
-    """Takes the json file and loads it into a pandas dataframe"""
-    pass
-
 def get_data_features(df):
     """This function expects a pandas dataframe with all of the data features"""
     features_df = get_odi_score(df)
@@ -451,6 +446,9 @@ def ml_model_prep(df, model_type):
     if model_type == 'choice_model':
         # Insert John's transformations
         # TODO: Call function here!!!
+        # Addding the risk question columns back
+        # risk_df = data.filter(regex='exer_|work_').copy()
+        # pd.concat([processed_final_df, risk_df], axis=1)
 
         pass
 
