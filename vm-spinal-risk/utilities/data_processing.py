@@ -437,6 +437,72 @@ def get_data_features(df):
     features_df = get_adi_score(features_df)
     return features_df
 
+def choice_model_prep(df, ml_df):
+    """
+    df = dataframe of processed patient input
+    ml_df = dataframe of processed ml data for risk score model
+    """
+    risk_df = df[['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
+                  'exer_50improv_90drop', 'exer_90improv_1drop', 'exer_90improv_10drop',
+                  'exer_90improv_50drop', 'exer_90improv_90drop', 'exer_50pain_1death',
+                  'exer_50pain_10death', 'exer_50pain_50death', 'exer_90pain_1death',
+                  'exer_90pain_10death', 'exer_90pain_50death', 'work_50improv_1drop',
+                  'work_50improv_10drop', 'work_50improv_50drop', 'work_50improv_90drop',
+                  'work_90improv_1drop', 'work_90improv_10drop', 'work_90improv_50drop',
+                  'work_50improv_1para', 'work_50improv_10para', 'work_50improv_50para',
+                  'work_50improv_90para', 'work_90improv_1para', 'work_90improv_10para',
+                  'work_90improv_50para', 'work_50improv_1death', 'work_50improv_10death',
+                  'work_50improv_50death', 'work_90improv_1death',
+                  'work_90improv_10death', 'work_90improv_50death']].copy().reset_index(drop=True)
+
+    data = pd.concat([ml_df, risk_df], axis=1)
+
+    # Fix column names
+    cols = list(data.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    data.columns = new_cols
+
+    # Drop spinal risk score
+    data.drop(columns=['spinal_risk_score'], inplace=True, errors='ignore')
+
+    # Reshape from wide to long
+    data_long = pd.melt(data,
+                        id_vars=['religion_10', 'sex', 'income', 'education', 'prior_surg', 'succ_surg',
+                                 'age', 'odi_final', 'bmi', 'dospert_ethical', 'dospert_financial',
+                                 'dospert_health/safety', 'dospert_recreational', 'dospert_social',
+                                 'height_m', 'weight_kg', 'ADI_NATRANK', 'ADI_STATERNK'],
+                        var_name='risk_question', value_name='choice')
+    split_df = data_long['risk_question'].str.split('_', expand=True)
+    # data_long['choice'] = data_long['choice'] + 1
+    data_long['activity'] = split_df[0]
+    data_long['pct_improv'] = split_df[1].str.extract(r'(\d{1,})', expand=False)
+    data_long['comp'] = split_df[2].str.extract(r'(drop|para|death)', expand=False)
+    data_long['pct_comp'] = split_df[2].str.extract(r'(\d{1,})', expand=False)
+    for c in ['pct_improv', 'pct_comp']:
+        data_long[c] = pd.to_numeric(data_long[c])
+    
+    ohe_cols = ['activity', 'comp']
+    num_cols = ['pct_improv', 'pct_comp']
+    
+    with open('./data/ml_models/choice_model_preprocessor.pkl', 'rb') as f:
+        preprocessor = pickle.load(f)
+
+    preprocessor.fit(data_long)  # Fit the ColumnTransformer to your data
+    transformed_columns = preprocessor.get_feature_names_out(input_features=data_long.columns)
+
+    processed = preprocessor.fit_transform(data_long)
+    processed_df = pd.DataFrame(processed, columns=transformed_columns)
+    cols = list(processed_df.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    processed_df.columns = new_cols
+
+    drop_cols = ohe_cols + num_cols + ['risk_question']
+    data_long.drop(columns=drop_cols, inplace=True)
+    model_data = pd.concat([data_long, processed_df], axis=1)
+
+    return model_data
+
+
 def ml_model_prep(df, model_type):
     """Prepares the data for the ml models
     df = all_risk_processed pandas dataframe.
@@ -449,10 +515,8 @@ def ml_model_prep(df, model_type):
     ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
 
     if model_type == 'choice_model':
-        # Insert John's transformations
-        # TODO: Call function here!!!
-
-        pass
+        choice_ml_df = choice_model_prep(df, ml_df)
+        return choice_ml_df
 
     # Additional polynomial transformations
     ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
