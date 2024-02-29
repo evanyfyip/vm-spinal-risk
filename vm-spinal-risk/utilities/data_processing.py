@@ -244,7 +244,7 @@ def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
         df[subscale_name] = df[dospert_cols].sum(axis = 1)
                 
     # drop the original dospert columns since we do not need them anymore
-    result = df.drop(df.iloc[:, idx_start:idx_start + 30], axis = 1)
+    result = df.drop(columns=df.filter(regex='dospert\d').columns)
     return result
   
   
@@ -439,62 +439,29 @@ def choice_model_prep(df, ml_df):
     df = dataframe of processed patient input
     ml_df = dataframe of processed ml data for risk score model
     """
-    risk_df = df[['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
-                  'exer_50improv_90drop', 'exer_90improv_1drop', 'exer_90improv_10drop',
-                  'exer_90improv_50drop', 'exer_90improv_90drop', 'exer_50pain_1death',
-                  'exer_50pain_10death', 'exer_50pain_50death', 'exer_90pain_1death',
-                  'exer_90pain_10death', 'exer_90pain_50death', 'work_50improv_1drop',
-                  'work_50improv_10drop', 'work_50improv_50drop', 'work_50improv_90drop',
-                  'work_90improv_1drop', 'work_90improv_10drop', 'work_90improv_50drop',
-                  'work_50improv_1para', 'work_50improv_10para', 'work_50improv_50para',
-                  'work_50improv_90para', 'work_90improv_1para', 'work_90improv_10para',
-                  'work_90improv_50para', 'work_50improv_1death', 'work_50improv_10death',
-                  'work_50improv_50death', 'work_90improv_1death',
-                  'work_90improv_10death', 'work_90improv_50death']].copy().reset_index(drop=True)
 
-    data = pd.concat([ml_df, risk_df], axis=1)
-
-    # Fix column names
-    cols = list(data.columns)
-    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
-    data.columns = new_cols
+    # Tell James
+    # drop:para:death = 0:1:2
+    # activity --> exer:work = 0:1
+    choice_model_df = df[['activity', 'comp', 'pct_improv', 'pct_comp']].copy()
+    choice_model_df['activity'] = np.where(choice_model_df['activity'] == 0, 'exer', 'work')
+    choice_model_df['comp'] = np.where(choice_model_df['comp'] == 0,
+                                       'drop',
+                                       np.where(choice_model_df['comp'] == 1, 'para', 'death'))
 
     # Drop spinal risk score
-    data.drop(columns=['spinal_risk_score'], inplace=True, errors='ignore')
+    ml_df.drop(columns=['spinal_risk_score'], inplace=True, errors='ignore')
 
-    # Reshape from wide to long
-    data_long = pd.melt(data,
-                        id_vars=['religion_10', 'sex', 'income', 'education', 'prior_surg', 'succ_surg',
-                                 'age', 'odi_final', 'bmi', 'dospert_ethical', 'dospert_financial',
-                                 'dospert_health/safety', 'dospert_recreational', 'dospert_social',
-                                 'height_m', 'weight_kg', 'ADI_NATRANK', 'ADI_STATERNK'],
-                        var_name='risk_question', value_name='choice')
-    split_df = data_long['risk_question'].str.split('_', expand=True)
-    # data_long['choice'] = data_long['choice'] + 1
-    data_long['activity'] = split_df[0]
-    data_long['pct_improv'] = split_df[1].str.extract(r'(\d{1,})', expand=False)
-    data_long['comp'] = split_df[2].str.extract(r'(drop|para|death)', expand=False)
-    data_long['pct_comp'] = split_df[2].str.extract(r'(\d{1,})', expand=False)
-    for c in ['pct_improv', 'pct_comp']:
-        data_long[c] = pd.to_numeric(data_long[c])
-    
-    ohe_cols = ['activity', 'comp']
-    num_cols = ['pct_improv', 'pct_comp']
-    
     with open('./data/ml_models/choice_model_preprocessor.pkl', 'rb') as f:
         preprocessor = pickle.load(f)
-
-    processed = preprocessor.transform(data_long)
-    transformed_columns = preprocessor.get_feature_names_out(input_features=data_long.columns)
+    processed = preprocessor.transform(choice_model_df)
+    transformed_columns = preprocessor.get_feature_names_out(input_features=choice_model_df.columns)
 
     processed_df = pd.DataFrame(processed, columns=transformed_columns)
     cols = list(processed_df.columns)
     new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
     processed_df.columns = new_cols
-
-    drop_cols = ohe_cols + num_cols + ['risk_question']
-    data_long.drop(columns=drop_cols, inplace=True)
-    model_data = pd.concat([data_long, processed_df], axis=1)
+    model_data = pd.concat([ml_df, processed_df], axis=1)
 
     return model_data
 
@@ -516,7 +483,8 @@ def preprocessing(df):
     'work_90improv_10death', 'work_90improv_50death', 'att_pass',
     'risk_1_complete','height', 'weight', 'record_id', 'risk_1_timestamp', 
     'zipcode','age_range', 'postal_code','state_code','city',
-    'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state'], axis=1, errors='ignore')
+    'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state',
+    'activity', 'comp', 'pct_improv', 'pct_comp'], axis=1, errors='ignore')
     out_df['ADI_NATRANK'] = pd.to_numeric(out_df['ADI_NATRANK'], errors='coerce').astype(float).astype('Int64')
     out_df['ADI_STATERNK'] = pd.to_numeric(out_df['ADI_STATERNK'], errors='coerce').astype(float).astype('Int64')
     return out_df
@@ -532,6 +500,9 @@ def ml_model_prep(df, model_type):
     ml_df = ml_data_processor.transform(processed_df)
     transformed_columns = ml_data_processor.get_feature_names_out(input_features=processed_df.columns)
     ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
+    cols = list(ml_df.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    ml_df.columns = new_cols
 
     if model_type == 'choice_model':
         choice_ml_df = choice_model_prep(df, ml_df)
