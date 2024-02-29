@@ -9,6 +9,8 @@ import pickle
 import json
 from sklearn.preprocessing import PolynomialFeatures
 
+from .drop_unbalanced_features import DropUnbalancedFeatures
+
 from dotenv import load_dotenv
 
 def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
@@ -242,7 +244,7 @@ def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
         df[subscale_name] = df[dospert_cols].sum(axis = 1)
                 
     # drop the original dospert columns since we do not need them anymore
-    result = df.drop(df.iloc[:, idx_start:idx_start + 30], axis = 1)
+    result = df.drop(columns=df.filter(regex='dospert\d').columns)
     return result
   
   
@@ -420,11 +422,6 @@ def manual_drop_records(df):
     final_df = final_df.reset_index().iloc[:, 2:]
     return final_df
 
-
-def json_to_df():
-    """Takes the json file and loads it into a pandas dataframe"""
-    pass
-
 def get_data_features(df):
     """This function expects a pandas dataframe with all of the data features"""
     features_df = get_odi_score(df)
@@ -437,26 +434,84 @@ def get_data_features(df):
     features_df = get_adi_score(features_df)
     return features_df
 
+def choice_model_prep(df, ml_df):
+    """
+    df = dataframe of processed patient input
+    ml_df = dataframe of processed ml data for risk score model
+    """
+
+    # Tell James
+    # drop:para:death = 0:1:2
+    # activity --> exer:work = 0:1
+    choice_model_df = df[['activity', 'comp', 'pct_improv', 'pct_comp']].copy()
+    choice_model_df['activity'] = np.where(choice_model_df['activity'] == 0, 'exer', 'work')
+    choice_model_df['comp'] = np.where(choice_model_df['comp'] == 0,
+                                       'drop',
+                                       np.where(choice_model_df['comp'] == 1, 'para', 'death'))
+
+    # Drop spinal risk score
+    ml_df.drop(columns=['spinal_risk_score'], inplace=True, errors='ignore')
+
+    with open('./data/ml_models/choice_model_preprocessor.pkl', 'rb') as f:
+        preprocessor = pickle.load(f)
+    processed = preprocessor.transform(choice_model_df)
+    transformed_columns = preprocessor.get_feature_names_out(input_features=choice_model_df.columns)
+
+    processed_df = pd.DataFrame(processed, columns=transformed_columns)
+    cols = list(processed_df.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    processed_df.columns = new_cols
+    model_data = pd.concat([ml_df, processed_df], axis=1)
+
+    return model_data
+
+def preprocessing(df):
+    out_df = df.drop(['odi_1', 'odi_2', 'odi_3',
+    'odi_4', 'odi_5', 'odi_6', 'odi_7', 'odi_8', 'odi_9', 'odi_10',
+    'exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
+    'exer_50improv_90drop', 'att_check_1', 'exer_90improv_1drop',
+    'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
+    'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
+    'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
+    'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
+    'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
+    'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
+    'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
+    'work_90improv_10para', 'att_check2', 'work_90improv_50para',
+    'work_50improv_1death', 'work_50improv_10death',
+    'work_50improv_50death', 'work_90improv_1death',
+    'work_90improv_10death', 'work_90improv_50death', 'att_pass',
+    'risk_1_complete','height', 'weight', 'record_id', 'risk_1_timestamp', 
+    'zipcode','age_range', 'postal_code','state_code','city',
+    'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state',
+    'activity', 'comp', 'pct_improv', 'pct_comp'], axis=1, errors='ignore')
+    out_df['ADI_NATRANK'] = pd.to_numeric(out_df['ADI_NATRANK'], errors='coerce').astype(float).astype('Int64')
+    out_df['ADI_STATERNK'] = pd.to_numeric(out_df['ADI_STATERNK'], errors='coerce').astype(float).astype('Int64')
+    return out_df
+
 def ml_model_prep(df, model_type):
     """Prepares the data for the ml models
     df = all_risk_processed pandas dataframe.
     """
     # Load the ML data processing pipeline
-    with open('./data/ml_models/ml_pipeline.pkl', 'rb') as f:
+    with open('./data/ml_models/general_model_preprocessor.pkl', 'rb') as f:
         ml_data_processor = pickle.load(f)
-    ml_df = ml_data_processor.fit(df)
-    transformed_columns = ml_data_processor.get_feature_names_out(input_features=df.columns)
+    processed_df = preprocessing(df)
+    ml_df = ml_data_processor.transform(processed_df)
+    transformed_columns = ml_data_processor.get_feature_names_out(input_features=processed_df.columns)
     ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
+    cols = list(ml_df.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    ml_df.columns = new_cols
 
     if model_type == 'choice_model':
-        # Insert John's transformations
-        # TODO: Call function here!!!
-
-        pass
-
-    # Additional polynomial transformations
-    ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
-    return ml_df
+        choice_ml_df = choice_model_prep(df, ml_df)
+        return choice_ml_df
+    elif model_type == 'risk_model':
+        # Additional polynomial transformations
+        # ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+        ml_df.drop(columns=['ADI_STATERNK', 'height_m'], inplace=True)
+        return ml_df
 
 
 def main():
