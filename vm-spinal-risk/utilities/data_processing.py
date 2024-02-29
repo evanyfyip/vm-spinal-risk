@@ -494,7 +494,7 @@ def ml_model_prep(df, model_type):
     df = all_risk_processed pandas dataframe.
     """
     # Load the ML data processing pipeline
-    with open('./data/ml_models/ml_pipeline.pkl', 'rb') as f:
+    with open('./data/ml_models/general_model_preprocessor.pkl', 'rb') as f:
         ml_data_processor = pickle.load(f)
     processed_df = preprocessing(df)
     ml_df = ml_data_processor.transform(processed_df)
@@ -510,6 +510,7 @@ def ml_model_prep(df, model_type):
     elif model_type == 'risk_model':
         # Additional polynomial transformations
         # ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+        ml_df.drop(columns=['ADI_STATERNK', 'height_m'], inplace=True)
         return ml_df
 
 
