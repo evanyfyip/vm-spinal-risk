@@ -16,4 +16,10 @@ def predict_choice_model(df):
         model = pickle.load(f)
     
     pred = model.predict(X)
+    # If predicted value is less than 0, make it 0
+    pred = [0 if p < 0 else p for p in pred]
+    # If predicted value is more than 5, make it 5
+    pred = [5 if p > 5 else p for p in pred]
+    # Multiply by 20 to bring predictions to 0-100 scale
+    pred = [p * 20 for p in pred]
     return pred
