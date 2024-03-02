@@ -1,17 +1,21 @@
+# Standard library imports
 import os
 import time
 import requests
 import re
+
+# Third-party library imports
+from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 import pickle
-import json
 from sklearn.preprocessing import PolynomialFeatures
+from tqdm import tqdm
+import json
 
+# Local imports
 from .drop_unbalanced_features import DropUnbalancedFeatures
 
-from dotenv import load_dotenv
 
 def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
     """
@@ -296,7 +300,7 @@ def get_adi_score(df):
     df['fips'] = get_fips_from_lat_lon(df)
     df['fips'] = df['fips'].astype('string')
 
-    adi_df = pd.read_csv('./data/adi-download/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
+    adi_df = pd.read_csv('./data/adi_data_reference/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
     # Joining adi to df
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
