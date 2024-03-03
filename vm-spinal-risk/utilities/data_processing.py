@@ -444,8 +444,8 @@ def choice_model_prep(df, ml_df):
     ml_df = dataframe of processed ml data for risk score model
     """
 
-    # Tell James
-    # drop:para:death = 0:1:2
+    # Mapping
+    # comp --> drop:para:death = 0:1:2
     # activity --> exer:work = 0:1
     choice_model_df = df[['activity', 'comp', 'pct_improv', 'pct_comp']].copy()
     choice_model_df['activity'] = np.where(choice_model_df['activity'] == 0, 'exer', 'work')
