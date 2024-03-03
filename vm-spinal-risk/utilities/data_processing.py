@@ -1,17 +1,21 @@
+# Standard library imports
 import os
 import time
 import requests
 import re
+
+# Third-party library imports
+from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 import pickle
-import json
 from sklearn.preprocessing import PolynomialFeatures
+from tqdm import tqdm
+import json
 
+# Local imports
 from .drop_unbalanced_features import DropUnbalancedFeatures
 
-from dotenv import load_dotenv
 
 def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
     """
@@ -296,7 +300,7 @@ def get_adi_score(df):
     df['fips'] = get_fips_from_lat_lon(df)
     df['fips'] = df['fips'].astype('string')
 
-    adi_df = pd.read_csv('./data/adi-download/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
+    adi_df = pd.read_csv('./data/adi_data_reference/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
     # Joining adi to df
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
@@ -494,7 +498,7 @@ def ml_model_prep(df, model_type):
     df = all_risk_processed pandas dataframe.
     """
     # Load the ML data processing pipeline
-    with open('./data/ml_models/ml_pipeline.pkl', 'rb') as f:
+    with open('./data/ml_models/general_model_preprocessor.pkl', 'rb') as f:
         ml_data_processor = pickle.load(f)
     processed_df = preprocessing(df)
     ml_df = ml_data_processor.transform(processed_df)
@@ -510,6 +514,7 @@ def ml_model_prep(df, model_type):
     elif model_type == 'risk_model':
         # Additional polynomial transformations
         # ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+        ml_df.drop(columns=['ADI_STATERNK', 'height_m'], inplace=True)
         return ml_df
 
 
