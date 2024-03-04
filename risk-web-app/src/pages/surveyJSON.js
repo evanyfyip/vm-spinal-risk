@@ -238,12 +238,137 @@ export const surveyJson = {
                     title: "PAIN INTENSITY",
                     type: "radiogroup",
                     choices: [
-                        { value: 6, text: "I can tollerate..." },
-                        { value: 5, text: "The pain is bad..." },
-                        { value: 4, text: "Pain killers give complete..." },
-                        { value: 3, text: "Pain killers give moderate..." },
-                        { value: 2, text: "Pain killers give very little..." },
-                        { value: 1, text: "Pain killers have no effect..." }
+                        { value: 1, text: "I can tolerate any pain I have without having to use pain killers" },
+                        { value: 2, text: "The pain is bad but I manage without taking pain killers" },
+                        { value: 3, text: "Pain killers give complete relief from pain" },
+                        { value: 4, text: "Pain killers give moderate relief from pain" },
+                        { value: 5, text: "Pain killers give very little relief from pain" },
+                        { value: 6, text: "Pain killers have no effect on the pain and I do not use them" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_2",
+                    title: "PERSONAL CARE (e.g. Washing, Dressing)",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "I can look after myself normally without causing extra pain" },
+                        { value: 2, text: "I can look after myself normally but it causes extra pain" },
+                        { value: 3, text: "It is painful to look after myself and I am slow and careful" },
+                        { value: 4, text: "I need some help but manage most of my personal care" },
+                        { value: 5, text: "I need help every day in most aspects of self care I don't get dressed, I was with difficulty and stay in bed" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_3",
+                    title: "LIFTING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "I can lift heavy weights without extra pain" },
+                        { value: 2, text: "I can lift heavy weights but it gives extra pain" },
+                        { value: 3, text: "Pain prevents me from lifting heavy weights off the floor, but I can manage if they are conveniently positioned, i.e. on a table" },
+                        { value: 4, text: "Pain prevents me from lifting heavy weights, but I can manage light to medium weights if they are conveniently positioned" },
+                        { value: 5, text: "I can lift very light weights" },
+                        { value: 6, text: "I cannot lift or carry anything at all" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_4",
+                    title: "WALKING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "Pain does not prevent me walking any distance" },
+                        { value: 2, text: "Pain prevents me walking more than one mile" },
+                        { value: 3, text: "Pain prevents me walking more than ½ mile" },
+                        { value: 4, text: "Pain prevents me walking more than ¼ mile" },
+                        { value: 5, text: "I can only walk using a stick or crutches" },
+                        { value: 6, text: "I am in bed most of the time and have to crawl to the toilet" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_5",
+                    title: "SITTING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "I can sit in any chair as long as I like" },
+                        { value: 2, text: "I can only sit in my favorite chair as long as I like" },
+                        { value: 3, text: "Pain prevents me from sitting more than one hour" },
+                        { value: 4, text: "Pain prevents me from sitting more than ½ hour" },
+                        { value: 5, text: "Pain prevents me from sitting more than 10 minutes" },
+                        { value: 6, text: "Pain prevents me from sitting at all" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_6",
+                    title: "STANDING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "I can stand as long as I want without extra pain" },
+                        { value: 2, text: "I can stand as long as I want but it gives me extra pain" },
+                        { value: 3, text: "Pain prevents me from standing for more than one hour" },
+                        { value: 4, text: "Pain prevents me from standing for more than 30 minutes" },
+                        { value: 5, text: "Pain prevents me from standing for more than 10 minutes" },
+                        { value: 6, text: "Pain prevents me from standing at all" },
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_7",
+                    title: "SLEEPING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "Pain does not prevent me from sleeping well" },
+                        { value: 2, text: "I can sleep well only by using medication" },
+                        { value: 3, text: "Even when I take medication, I have less than 6 hrs sleep" },
+                        { value: 4, text: "Even when I take medication, I have less than 4 hrs sleep" },
+                        { value: 5, text: "Even when I take medication, I have less than 2 hrs sleep" },
+                        { value: 6, text: "Pain prevents me from sleeping at all" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_8",
+                    title: "SOCIAL LIFE",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "My social life is normal and gives me no extra pain" },
+                        { value: 2, text: "My social life is normal but increases the degree of pain" },
+                        { value: 3, text: "Pain has no significant effect on my social life apart from limiting my more energetic interests, i.e. dancing,etc." },
+                        { value: 4, text: "Pain has restricted my social life and I do not go out as often" },
+                        { value: 5, text: "Pain has restricted my social life to my home" },
+                        { value: 6, text: "I have no social life because of pain" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_9",
+                    title: "TRAVELLING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "I can travel anywhere without extra pain" },
+                        { value: 2, text: "I can travel anywhere but it gives me extra pain" },
+                        { value: 3, text: "Pain is bad, but I manage journeys over 2 hours" },
+                        { value: 4, text: "Pain restricts me to journeys of less than 1 hour" },
+                        { value: 5, text: "Pain restricts me to short necessary journeys under 30 minutes" },
+                        { value: 6, text: "Pain prevents me from traveling except to the doctor or hospital" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "odi_10",
+                    title: "EMPLOYMENT/ HOMEMAKING",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 1, text: "My normal homemaking/ job activities do not cause pain." },
+                        { value: 2, text: "My normal homemaking/ job activities increase my pain, but I can still perform all that is required of me." },
+                        { value: 3, text: "I can perform most of my homemaking/ job duties, but pain prevents me from performing more physicallystressful activities (e.g. lifting, vacuuming)" },
+                        { value: 4, text: "Pain prevents me from doing anything but light duties." },
+                        { value: 5, text: "Pain prevents me from doing even light duties." },
+                        { value: 6, text: "Pain prevents me from performing any job or homemaking chores" }
                     ],
                     isRequired: true
                 }
@@ -261,6 +386,441 @@ export const surveyJson = {
                 {
                     name: "dospert_1",
                     title: "Admitting that your tastes are different from those of a friend.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_2",
+                    title: "Going camping in the wilderness.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_3",
+                    title: "Betting a day's income at the horse races.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_4",
+                    title: "Investing 10% of your annual income in a moderate growth mutual fund.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_5",
+                    title: "Drinking heavily at a social function.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_6",
+                    title: "Taking some questionable deductions on your income tax return.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_7",
+                    title: "Disagreeing with an authority figure on a major issue.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_8",
+                    title: "Betting a day's income at a high-stake poker game.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_9",
+                    title: "Having an affair with a married man/woman.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_10",
+                    title: "Passing off somebody else's work as your own.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_11",
+                    title: "Going down a ski run that is beyond your ability.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_12",
+                    title: "Investing 5% of your annual income in a very speculative stock.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_13",
+                    title: "Going whitewater rafting at high water in the spring.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_14",
+                    title: "Betting a day's income on the outcome of a sporting event",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_15",
+                    title: "Engaging in unprotected sex.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_16",
+                    title: "Revealing a friend's secret to someone else.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_17",
+                    title: "Driving a car without wearing a seat belt.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_18",
+                    title: "Investing 10% of your annual income in a new business venture.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_19",
+                    title: "Taking a skydiving class.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_20",
+                    title: "Riding a motorcycle without a helmet.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_21",
+                    title: "Choosing a career that you truly enjoy over a more secure one.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_22",
+                    title: "Speaking your mind about an unpopular issue in a meeting at work.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_23",
+                    title: "Sunbathing without sunscreen.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_24",
+                    title: "Bungee jumping off a tall bridge.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_25",
+                    title: "Piloting a small plane.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_26",
+                    title: "Walking home alone at night in an unsafe area of town.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_27",
+                    title: "Moving to a city far away from your extended family.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_28",
+                    title: "Starting a new career in your mid-thirties.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_29",
+                    title: "Leaving your young children alone at home while running an errand.",
+                    type: "radiogroup",
+                    choices: [
+                        { value: 7, text: "Extremely likely" },
+                        { value: 6, text: "Moderately likely" },
+                        { value: 5, text: "Somewhat likely" },
+                        { value: 4, text: "Not sure" },
+                        { value: 3, text: "Somewhat unlikely" },
+                        { value: 2, text: "Moderately unlikely" },
+                        { value: 1, text: "Extremely unlikely" }
+                    ],
+                    isRequired: true
+                },
+                {
+                    name: "dospert_30",
+                    title: "Not returning a wallet you found that contains $200.",
                     type: "radiogroup",
                     choices: [
                         { value: 7, text: "Extremely likely" },
