@@ -19,7 +19,17 @@ const surveyJson = {
       elements: [
         {
           type:"html",
-          html: "<h4>Do we need a demographics page???</h4>"
+          html: "<h4>Demographics page will go here</h4>"
+        },
+        {
+          name: "test_question",
+          title: "Use test result?",
+          type: "radiogroup",
+          choices: [
+            { value: 1, text: "yes" },
+            { value: 0, text: "no" }
+          ],
+          isRequired: true
         }
       ]
     },
@@ -44,7 +54,8 @@ const surveyJson = {
           ],
           isRequired: true
         }
-      ]
+      ],
+      visibleIf: "{test_question} = 0" 
     },
     // PAGE 3 DOSPERT
     {
@@ -69,7 +80,8 @@ const surveyJson = {
           ],
           isRequired: true
         }
-      ]
+      ],
+      visibleIf: "{test_question} = 0" 
     },
     // PAGE 4 HAND SURVEY TO SURGEON
     {
@@ -78,7 +90,8 @@ const surveyJson = {
           type:"html",
           html: "<h4>Please hand device over to surgeon.</h4>"
         }
-      ]
+      ],
+      visibleIf: "{test_question} = 0" 
     },
     // PAGE 5 SURGEON INPUT
     {
@@ -105,7 +118,8 @@ const surveyJson = {
           ],
           isRequired: true
         }
-      ]
+      ],
+      visibleIf: "{test_question} = 0" 
     }
   ],
   showQuestionNumbers: "on",
@@ -123,7 +137,8 @@ function SurveyPatientPage() {
   const [surveyResults, setSurveyResults] = useState("");
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
   const [modelPrediction, setModelPrediction] = useState("");
-  // const testSurveyResponse = {'test_question': -1, 'odi_1': -1, 'dospert_1': -1, 'type_improvement': -1, 'percent_improvement': -1, 'percent_complication': -1, 'type_complication': -1}
+  const testSurveyResponse = {'test_question': -1, 'odi_1': -1, 'dospert_1': -1, 'type_improvement': -1, 'percent_improvement': -1, 'percent_complication': -1, 'type_complication': -1}
+  const headers = {'Accept': 'application/json','Content-Type': 'application/json'}
 
   const sendSurveyResult = (data) => {
     axios.post('/survey/predict', data)
@@ -136,8 +151,13 @@ function SurveyPatientPage() {
   };
 
   const displayResults = useCallback((sender) => {
-    setSurveyResults(JSON.stringify(sender.data, null, 4));
-    sendSurveyResult(sender.data)
+    if (sender.data["test_question"] == "1"){
+      setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
+      sendSurveyResult(testSurveyResponse)
+    } else {
+      setSurveyResults(JSON.stringify(sender.data, null, 4));
+      sendSurveyResult(sender.data)
+    }
     setIsSurveyCompleted(true);
   }, []);
 
