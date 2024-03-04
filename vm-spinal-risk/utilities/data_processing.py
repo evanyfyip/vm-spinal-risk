@@ -1,13 +1,21 @@
+# Standard library imports
 import os
 import time
 import requests
 import re
+
+# Third-party library imports
+from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
+import pickle
+from sklearn.preprocessing import PolynomialFeatures
 from tqdm import tqdm
 import json
 
-from dotenv import load_dotenv
+# Local imports
+from .drop_unbalanced_features import DropUnbalancedFeatures
+
 
 def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
     """
@@ -138,16 +146,14 @@ def get_age_ranges(df, age_column):
     df['age_range'] = np.select(conditions, result_values, default=0)
     return df
 
-odi_questions = [
-    'pain_intensity',
-    'personal_care_e_g_washing', 'lifting', 'walking', 'sitting',
-    'standing', 'sleeping', 'social_life', 'travelling',
-    'employment_homemaking'
-]
-def get_odi_score(df, odi_cols=odi_questions):
-    df = df.copy()
-    final_df = df[np.all(df[odi_cols] >= 1, axis=1) & np.all(df[odi_cols] <= 5, axis=1)].copy()
-    final_df['odi_score'] = np.sum(final_df[odi_cols], axis=1)
+def get_odi_score(df):
+    """Uses the odi_ columns to compute the odi_score
+    Returns the dataframe with the odi score
+    """
+    final_df = df.copy()
+    odi_df = final_df.filter(regex='odi_\d+')
+    odi_scores = (odi_df.sum(axis=1) - 1) / 50 * 100
+    final_df['odi_final'] = odi_scores
     return final_df
 
 
@@ -238,10 +244,11 @@ def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
     # obtain the sum for each dospert subscale
     for category, idx_list in dospert_registry.items():
         subscale_name = "dospert_" + category
-        df[subscale_name] = df.iloc[:, [_+idx_start-1 for _ in idx_list]].sum(axis = 1)
+        dospert_cols = ['dospert' + str(num) for num in dospert_registry[category]]
+        df[subscale_name] = df[dospert_cols].sum(axis = 1)
                 
     # drop the original dospert columns since we do not need them anymore
-    result = df.drop(df.iloc[:, idx_start:idx_start + 30], axis = 1)
+    result = df.drop(columns=df.filter(regex='dospert\d').columns)
     return result
   
   
@@ -293,7 +300,7 @@ def get_adi_score(df):
     df['fips'] = get_fips_from_lat_lon(df)
     df['fips'] = df['fips'].astype('string')
 
-    adi_df = pd.read_csv('./data/adi-download/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
+    adi_df = pd.read_csv('./data/adi_data_reference/US_2021_ADI_Census_Block_Group_v4_0_1.csv', dtype='str')
     # Joining adi to df
     df = df.merge(adi_df, how='left', left_on='fips', right_on='FIPS')
     return df
@@ -346,20 +353,7 @@ def scale_spinal_risk_score(risk_scores, df):
 
 def get_spinal_risk_score(df, scale=True):
     comp_weights, improv_weights = get_weights()
-    spinal_risk_cols = ['exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
-        'exer_50improv_90drop', 'exer_90improv_1drop',
-        'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
-        'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
-        'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
-        'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
-        'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
-        'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
-        'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
-        'work_90improv_10para', 'work_90improv_50para',
-        'work_50improv_1death', 'work_50improv_10death',
-        'work_50improv_50death', 'work_90improv_1death',
-        'work_90improv_10death', 'work_90improv_50death']
-    risk_df = df[spinal_risk_cols]
+    risk_df = df.filter(regex='work_|exer_')
 
     # Drop uncorrelated questions (Spearman < 0.5):
     # drop_cols = ['exer_50improv_50drop', 'exer_50improv_90drop', 'exer_90improv_90drop',
@@ -431,6 +425,97 @@ def manual_drop_records(df):
     final_df = df_reset[~df_reset['index'].isin(data['record_indices'])]
     final_df = final_df.reset_index().iloc[:, 2:]
     return final_df
+
+def get_data_features(df):
+    """This function expects a pandas dataframe with all of the data features"""
+    features_df = get_odi_score(df)
+    features_df = get_dospert_scores(df, 60)
+    features_df['height_m'] = features_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
+    features_df['weight_kg'] = features_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    features_df['bmi'] = features_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
+    features_df = get_age_ranges(features_df, age_column='age')
+    features_df = get_location_information(features_df)
+    features_df = get_adi_score(features_df)
+    return features_df
+
+def choice_model_prep(df, ml_df):
+    """
+    df = dataframe of processed patient input
+    ml_df = dataframe of processed ml data for risk score model
+    """
+
+    # Mapping
+    # comp --> drop:para:death = 0:1:2
+    # activity --> exer:work = 0:1
+    choice_model_df = df[['activity', 'comp', 'pct_improv', 'pct_comp']].copy()
+    choice_model_df['activity'] = np.where(choice_model_df['activity'] == 0, 'exer', 'work')
+    choice_model_df['comp'] = np.where(choice_model_df['comp'] == 0,
+                                       'drop',
+                                       np.where(choice_model_df['comp'] == 1, 'para', 'death'))
+
+    # Drop spinal risk score
+    ml_df.drop(columns=['spinal_risk_score'], inplace=True, errors='ignore')
+
+    with open('./data/ml_models/choice_model_preprocessor.pkl', 'rb') as f:
+        preprocessor = pickle.load(f)
+    processed = preprocessor.transform(choice_model_df)
+    transformed_columns = preprocessor.get_feature_names_out(input_features=choice_model_df.columns)
+
+    processed_df = pd.DataFrame(processed, columns=transformed_columns)
+    cols = list(processed_df.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    processed_df.columns = new_cols
+    model_data = pd.concat([ml_df, processed_df], axis=1)
+
+    return model_data
+
+def preprocessing(df):
+    out_df = df.drop(['odi_1', 'odi_2', 'odi_3',
+    'odi_4', 'odi_5', 'odi_6', 'odi_7', 'odi_8', 'odi_9', 'odi_10',
+    'exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
+    'exer_50improv_90drop', 'att_check_1', 'exer_90improv_1drop',
+    'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
+    'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
+    'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
+    'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
+    'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
+    'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
+    'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
+    'work_90improv_10para', 'att_check2', 'work_90improv_50para',
+    'work_50improv_1death', 'work_50improv_10death',
+    'work_50improv_50death', 'work_90improv_1death',
+    'work_90improv_10death', 'work_90improv_50death', 'att_pass',
+    'risk_1_complete','height', 'weight', 'record_id', 'risk_1_timestamp', 
+    'zipcode','age_range', 'postal_code','state_code','city',
+    'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state',
+    'activity', 'comp', 'pct_improv', 'pct_comp'], axis=1, errors='ignore')
+    out_df['ADI_NATRANK'] = pd.to_numeric(out_df['ADI_NATRANK'], errors='coerce').astype(float).astype('Int64')
+    out_df['ADI_STATERNK'] = pd.to_numeric(out_df['ADI_STATERNK'], errors='coerce').astype(float).astype('Int64')
+    return out_df
+
+def ml_model_prep(df, model_type):
+    """Prepares the data for the ml models
+    df = all_risk_processed pandas dataframe.
+    """
+    # Load the ML data processing pipeline
+    with open('./data/ml_models/general_model_preprocessor.pkl', 'rb') as f:
+        ml_data_processor = pickle.load(f)
+    processed_df = preprocessing(df)
+    ml_df = ml_data_processor.transform(processed_df)
+    transformed_columns = ml_data_processor.get_feature_names_out(input_features=processed_df.columns)
+    ml_df = pd.DataFrame(ml_df, columns=transformed_columns)
+    cols = list(ml_df.columns)
+    new_cols = [re.sub('^[A-z]{3}__', '', c) for c in cols]
+    ml_df.columns = new_cols
+
+    if model_type == 'choice_model':
+        choice_ml_df = choice_model_prep(df, ml_df)
+        return choice_ml_df
+    elif model_type == 'risk_model':
+        # Additional polynomial transformations
+        # ml_df = PolynomialFeatures(degree=2).fit_transform(ml_df)
+        ml_df.drop(columns=['ADI_STATERNK', 'height_m'], inplace=True)
+        return ml_df
 
 
 def main():

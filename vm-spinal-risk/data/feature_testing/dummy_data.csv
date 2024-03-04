@@ -1,0 +1,6 @@
+age,sex,height,weight,zipcode,ethnicity,income,education,prior_surg,spin_surg,succ_surg,religion,odi_1,odi_2,odi_3,odi_4,odi_5,odi_6,odi_7,odi_8,odi_9,odi_10,dospert1,dospert2,dospert3,dospert4,dospert5,dospert6,dospert7,dospert8,dospert9,dospert10,dospert11,dospert12,dospert13,dospert14,dospert15,dospert16,dospert17,dospert18,dospert19,dospert20,dospert21,dospert22,dospert23,dospert24,dospert25,dospert26,dospert27,dospert28,dospert29,dospert30,odi_final,bmi,activity,comp,pct_improv,pct_comp
+25,1,18,36,76177,4,4,6,1,0,1,1,1,1,1,1,1,2,1,1,1,1,7,7,1,7,3,2,6,1,4,1,6,5,6,1,5,1,1,6,7,1,6,5,5,7,1,6,7,6,1,5,0.5,20.79881657,0,0,50,20
+,1,18,36,76177,4,4,6,1,0,1,1,1,1,1,1,1,2,1,1,1,1,7,7,1,7,3,2,6,1,4,1,6,5,6,1,5,1,1,6,7,1,6,5,5,7,1,6,7,6,1,5,0.5,20.79881657,0,0,50,20
+50,1,18,36,76177,4,4,6,1,0,1,1,1,1,1,1,1,2,1,1,1,1,7,7,1,7,3,2,6,1,4,1,6,5,6,1,5,1,1,6,7,1,6,5,5,7,1,6,7,6,1,5,0.5,20.79881657,0,0,50,20
+40,1,18,36,76177,4,4,6,1,0,1,1,1,1,1,1,1,2,1,1,1,1,7,7,1,7,3,2,6,1,4,1,6,5,6,1,5,1,1,6,7,1,6,5,5,7,1,6,7,6,1,5,0.5,20.79881657,0,0,50,20
+30,1,18,36,76177,4,4,6,1,0,1,1,1,1,1,1,1,2,1,1,1,1,7,7,1,7,3,2,6,1,4,1,6,5,6,1,5,1,1,6,7,1,6,5,5,7,1,6,7,6,1,5,0.5,20.7988166,0,0,50,20
