@@ -17,6 +17,9 @@ def landing_page():
 @app.route("/survey/predict", methods=["POST"])
 def survey_patient_page():
     result = request.get_json(silent=False)
+    if "spin_surg" not in result and "succ_surg" not in result:
+        result["spin_surg"] = None
+        result["succ_surg"] = None
     print(f"result received from frontend: {result}")
     # model goes here
 

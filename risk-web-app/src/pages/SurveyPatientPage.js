@@ -4,133 +4,7 @@ import 'survey-core/defaultV2.min.css';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
 import axios from 'axios';
-
-const surveyJson = {
-  pages: [
-    // INTRO PAGE
-    {
-      elements: [{
-        type: "html",
-        html: "<h4>In this preoperation survey, we will ask you questions pertaining to your ODI and personality.</h4>"
-      }]
-    }, 
-    // PAGE 1 DEMOGRAPHICS 
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>Demographics page will go here</h4>"
-        },
-        {
-          name: "test_question",
-          title: "Use test result?",
-          type: "radiogroup",
-          choices: [
-            { value: 1, text: "yes" },
-            { value: 0, text: "no" }
-          ],
-          isRequired: true
-        }
-      ]
-    },
-    // PAGE 2 ODI
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>The next 10 questions will ask questions about how your back pain (If you have any) has affected your ability to manage everyday life.</h4>"
-        },
-        {
-          name: "odi_1",
-          title: "PAIN INTENSITY",
-          type: "radiogroup",
-          choices: [
-            { value: 6, text: "I can tollerate..." },
-            { value: 5, text: "The pain is bad..." },
-            { value: 4, text: "Pain killers give complete..." },
-            { value: 3, text: "Pain killers give moderate..." },
-            { value: 2, text: "Pain killers give very little..." },
-            { value: 1, text: "Pain killers have no effect..." }
-          ],
-          isRequired: true
-        }
-      ],
-      visibleIf: "{test_question} = 0" 
-    },
-    // PAGE 3 DOSPERT
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>In the next 30 questions, you will assess the likelihood of your engagement in various activities,\
-           covering areas such as financial decisions, health/safety, recreational pursuits, ethical choices, and social decisions.</h4>"
-        },
-        {
-          name: "dospert_1",
-          title: "Admitting that your tastes are different from those of a friend.",
-          type: "radiogroup",
-          choices: [
-            { value: 7, text: "Extremely likely" },
-            { value: 6, text: "Moderately likely" },
-            { value: 5, text: "Somewhat likely" },
-            { value: 4, text: "Not sure" },
-            { value: 3, text: "Somewhat unlikely" },
-            { value: 2, text: "Moderately unlikely" },
-            { value: 1, text: "Extremely unlikely" }
-          ],
-          isRequired: true
-        }
-      ],
-      visibleIf: "{test_question} = 0" 
-    },
-    // PAGE 4 HAND SURVEY TO SURGEON
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>Please hand device over to surgeon.</h4>"
-        }
-      ],
-      visibleIf: "{test_question} = 0" 
-    },
-    // PAGE 5 SURGEON INPUT
-    {
-      elements: [
-        {
-          name: "percent_improvement",
-          title: "What percentage of improvement?",
-          type: "radiogroup",
-          choices: [
-            { value: 90, text: "90%" },
-            { value: 50, text: "50%" },
-            { value: 10, text: "10%" }
-          ],
-          isRequired: true
-        },
-        {
-          name: "percent_complication",
-          title: "What percentage of complication?",
-          type: "radiogroup",
-          choices: [
-            { value: 90, text: "90%" },
-            { value: 50, text: "50%" },
-            { value: 10, text: "10%" }
-          ],
-          isRequired: true
-        }
-      ],
-      visibleIf: "{test_question} = 0" 
-    }
-  ],
-  showQuestionNumbers: "on",
-  pageNextText: "Next",
-  completeText: "Submit",
-  showPrevButton: true,
-  firstPageIsStarted: true,
-  startSurveyText: "Take the Survey",
-  showProgressBar: "top",
-  showCompletedPage: false
-};
+import { surveyJson } from "./surveyJSON";
 
 function SurveyPatientPage() {
   const survey = useRef(new Model(surveyJson)).current;
@@ -151,7 +25,7 @@ function SurveyPatientPage() {
   };
 
   const displayResults = useCallback((sender) => {
-    if (sender.data["test_question"] == "1"){
+    if (sender.data["test_question"] == 1){
       setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
       sendSurveyResult(testSurveyResponse)
     } else {
