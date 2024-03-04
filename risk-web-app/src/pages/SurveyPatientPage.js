@@ -122,11 +122,13 @@ function SurveyPatientPage() {
   const survey = useRef(new Model(surveyJson)).current;
   const [surveyResults, setSurveyResults] = useState("");
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
+  const [modelPrediction, setModelPrediction] = useState("");
+  // const testSurveyResponse = {'test_question': -1, 'odi_1': -1, 'dospert_1': -1, 'type_improvement': -1, 'percent_improvement': -1, 'percent_complication': -1, 'type_complication': -1}
 
   const sendSurveyResult = (data) => {
     axios.post('/survey/predict', data)
       .then(response => {
-        console.log(response.data);
+        setModelPrediction(JSON.stringify(response.data, null, 4));
       })
       .catch(error => {
         console.error('Error submitting survey:', error);
@@ -146,16 +148,51 @@ function SurveyPatientPage() {
       <Survey model={survey} id="surveyContainer" />
       {isSurveyCompleted && (
         <>
-          <h1>AFTER THIS QUESTION, SEND RESULTS TO MODEL THROUGH API POST REQUEST AND DISPLAY RESULTS PAGE WITH VISUALS</h1>
-          <p>Result JSON:</p>
+          <p>Survey Result sent to backend:</p>
           <code style={{ whiteSpace: 'pre' }}>
             {surveyResults}
+          </code>
+
+          <p>Model prediction received from backend:</p>
+          <code style={{ whiteSpace: 'pre' }}>
+            {modelPrediction}
           </code>
         </>
         )
       }
     </>
   );
+
+  // const displayResults = useCallback((sender) => {
+  //   if (sender.data["test_question"] == 1){
+  //     setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
+  //   } else {
+  //     setSurveyResults(JSON.stringify(sender.data, null, 4));
+  //   }
+  //   sendSurveyResult(surveyResults)
+  //   setIsSurveyCompleted(true);
+  // }, []);
+
+  // survey.onComplete.add(displayResults);
+
+  // return (
+  //   <>
+  //     <Survey model={survey} id="surveyContainer" />
+  //     {isSurveyCompleted && (
+  //       <>
+  //         <p>Sent to backend:</p>
+  //         <code style={{ whiteSpace: 'pre' }}>
+  //           {surveyResults}
+  //         </code>
+  //         <p>Prediction Result (received from backend):</p>
+  //         <code style={{ whiteSpace: 'pre' }}>
+  //           {modelPrediction}
+  //         </code>
+  //       </>
+  //       )
+  //     }
+  //   </>
+  // );
 }
 
 export default SurveyPatientPage;

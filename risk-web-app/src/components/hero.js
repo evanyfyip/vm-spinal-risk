@@ -5,7 +5,6 @@ function Hero() {
     <div style={{
       textAlign: 'center',
       padding: '50px 20px',
-      backgroundImage: 'url(YourBackgroundImageUrl)',
       backgroundSize: 'cover',
       color: 'white',
     }}>

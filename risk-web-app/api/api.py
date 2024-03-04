@@ -1,9 +1,11 @@
 import pandas as pd
 import os
 import time
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+
+# data = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "vm-spinal-risk", "data", "all_risk_processed.csv"))
 
 # home page of the project with basic information
 @app.route('/home')
@@ -11,12 +13,18 @@ def landing_page():
     return {'time': time.time()}
     # return render_template('home.html')
 
-# patient answers preoeration survey including ODI, dospert, etc.
+# the results from the preoperation survey including ODI, dospert, etc. is input into the model, model sends back distribution images for risk, dospert, 
 @app.route("/survey/predict", methods=["POST"])
 def survey_patient_page():
-    result = request.get_json(silent=True)
-    print(result)
-    return 'OK, response received.'
+    result = request.get_json(silent=False)
+    print(f"result received from frontend: {result}")
+    # model goes here
+
+    # model predicts
+
+    # model returns percentile information
+     
+    return jsonify(result)
     # return redirect(url_for("index"))
 
 # surgeon will enter values for percent complication and percent improvement
@@ -34,7 +42,19 @@ def survey_results_page():
 # admin page: allows importing new data, exporting existing training data, show metrics on the data
 @app.route("/admin")
 def admin_page():
-    data = pd.read_csv(os.path.join(os.getcwd(), "data/all_risk_processed.csv"))
     # Process data into graphics
     return
     # return render_template('admin.html')
+
+"""
+send visual as image using the following
+import json
+import base64
+
+data = {}
+with open('some.gif', mode='rb') as file:
+    img = file.read()
+data['img'] = base64.encodebytes(img).decode('utf-8')
+
+print(json.dumps(data))
+"""
