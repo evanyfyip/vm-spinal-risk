@@ -8,11 +8,12 @@ function ReactFooter() {
       justifyContent: 'center',
       alignItems: 'center',
       padding: '20px',
-      backgroundColor: '#282c34',
-      color: 'white',
+      backgroundColor: 'white',
+      color: 'black',
     }}>
-      <p style={{ margin: '0 10px' }}>Powered by</p>
-      <FaReact size={50} color="#61DAFB" /> 
+      <p style={{ margin: '0 10px', color: 'black' }}>Built With:</p>
+      <FaReact size={25} color="#61DAFB" /> 
+      <img src={'/muilogo.png'} alt="Logo" style={{ height: '25px', marginLeft: '10px' }} />
     </footer>
   );
 }
