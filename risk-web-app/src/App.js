@@ -6,7 +6,7 @@ import './App.css';
 
 // UI Components
 import Navbar from "./components/NavBar";
-import Footer from "./components/footer"
+import Footer from "./components/footer";
 // Pages
 import HomePage from './pages/HomePage';
 import SurveyPatientPage from './pages/SurveyPatientPage';
@@ -14,28 +14,13 @@ import SurveySurgeonPage from './pages/SurveySurgeonPage';
 import SurveyResultsPage from './pages/SurveyResultsPage';
 import AdminPage from './pages/AdminPage';
 import AboutPage from './pages/AboutPage';
+import TestPlot from './pages/TestPlot'
 import { FaFlask, FaReact } from 'react-icons/fa';
 
 function App() {
-  // Example of how to fetch data from the API
-  const [currentTime, setCurrentTime] = useState(0);
 
-  useEffect(() => {
-    fetch('/home').then(res => res.json()).then(data => {
-      setCurrentTime(data.time);
-    });
-  }, []);
 
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <p>The current time is {currentTime}.</p>
-    //   </header>
-    // </div>
     <Router>
       <div>
         <Navbar />
@@ -45,6 +30,7 @@ function App() {
           <Route path="/survey/surgeon" element={<SurveySurgeonPage />} />
           <Route path="/survey/results" element={<SurveyResultsPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/TestPlot" element={<TestPlot />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <Footer></Footer>
