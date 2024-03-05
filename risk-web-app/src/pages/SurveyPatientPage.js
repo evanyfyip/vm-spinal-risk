@@ -15,7 +15,7 @@ function SurveyPatientPage() {
     "test_question": 1, "age": 23, "sex": 1, "height": 17, "weight": 125, "zipcode": "98053", "ethnicity": 4, "income": 11, "education": 7, "prior_surg": 0, "religion": 2,
     "odi_1": 1, "odi_2": 1, "odi_3": 1, "odi_4": 1, "odi_5": 1, "odi_6": 1, "odi_7": 1, "odi_8": 1, "odi_9": 1, "odi_10": 1,
     "dospert1": 7, "dospert2": 7, "dospert3": 1, "dospert4": 5, "dospert5": 2, "dospert6": 1, "dospert7": 5, "dospert8": 1, "dospert9": 1, "dospert10": 1, "dospert11": 6, "dospert12": 2, "dospert13": 2, "dospert14": 1, "dospert15": 2, "dospert16": 3, "dospert17": 1, "dospert18": 1, "dospert19": 7, "dospert20": 1, "dospert21": 3, "dospert22": 5, "dospert23": 2, "dospert24": 2, "dospert25": 2, "dospert26": 2, "dospert27": 3, "dospert28": 4, "dospert29": 1, "dospert30": 1,
-    "activity": 0, "percent_improv": 50, "comp": 1, "percent_comp": 50
+    "activity": 0, "pct_improv": 50, "comp": 1, "pct_comp": 50
   }
 
   // send the survey result to te backend endpoint

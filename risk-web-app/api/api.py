@@ -34,8 +34,8 @@ def survey_patient_page():
     result = request.get_json(silent=False)
     del result["test_question"]
     if "spin_surg" not in result and "succ_surg" not in result:
-        result["spin_surg"] = None
-        result["succ_surg"] = None
+        result["spin_surg"] = 0
+        result["succ_surg"] = 0
 
     # preprocess data into correct format
     df = pd.DataFrame([result])
@@ -44,11 +44,12 @@ def survey_patient_page():
 
     # model predictions
     pred_choice = predict_choice_model(df_features)
-    # pred_risk = predict_risk_model(df_features)
+    pred_risk = predict_risk_model(df_features)
+    print(pred_choice)
+    print(pred_risk)
 
-    # return {"predicted_choice": pred_choice, "predicted_risk": pred_risk}
-    # return redirect(url_for("index"))
-    return result
+    return {"predicted_choice": pred_choice[0][0], "predicted_risk": pred_risk[0][0]}
+    # return {"predicted_choice": pred_choice}
 
 # surgeon will enter values for percent complication and percent improvement
 @app.route("/survey/surgeon")

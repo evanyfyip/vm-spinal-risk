@@ -17,7 +17,7 @@ def predict_risk_model(df):
 
     # Save SHAP plot
     shap_values = explainer(X)
-    shap_plot = shap.plots.bar(shap_values)
+    shap_plot = shap.plots.bar(shap_values, show=False)
 
     pred = model.predict(X)
     return (pred, shap_plot)
@@ -37,7 +37,7 @@ def predict_choice_model(df):
     
     # Save SHAP plot
     shap_values = explainer(X)
-    shap_plot = shap.plots.bar(shap_values)
+    shap_plot = shap.plots.bar(shap_values, show=False)
 
     pred = model.predict(X)
     # If predicted value is less than 0, make it 0

@@ -861,7 +861,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "percent_improv",
+                    name: "pct_improv",
                     title: "What percentage of improvement?",
                     type: "radiogroup",
                     choices: [
@@ -882,7 +882,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "percent_comp",
+                    name: "pct_comp",
                     title: "What percentage of complication?",
                     type: "radiogroup",
                     choices: [
