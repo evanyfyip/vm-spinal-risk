@@ -1,5 +1,6 @@
 import os
 import sys
+thisFileDir = os.path.dirname(__file__)
 utilitiesRootDir = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "vm-spinal-risk")
 sys.path.insert(0, utilitiesRootDir)
 os.chdir(utilitiesRootDir)
@@ -39,8 +40,6 @@ def landing_page():
 # the results from the preoperation survey including ODI, dospert, etc. is input into the model, model sends back distribution images for risk, dospert, 
 @app.route("/survey/predict", methods=["POST"])
 def survey_patient_page():
-    os.chdir(utilitiesRootDir)
-    print(os.getcwd())
     result = request.get_json(silent=False)
     del result["test_question"]
     if "spin_surg" not in result and "succ_surg" not in result:
@@ -55,18 +54,24 @@ def survey_patient_page():
     # model predictions
     pred_choice = predict_choice_model(df_features)
     pred_risk = predict_risk_model(df_features)
-    print(pred_choice)
-    print(pred_risk)
+    print(f"patient will choose: {pred_choice[0][0]}")
+    print(f"predicted patient risk score: {pred_risk[0][0]}")
+    print(f"choice shap: {pred_choice[1]}")
+    print(f"risk shap: {pred_risk[1]}")
 
     # Load and preprocess the data
     sns.set_theme()
+    os.chdir(thisFileDir)
     odi_df = pd.read_csv('../data_processed/all_risk_processed.csv')
+    os.chdir(utilitiesRootDir)
     odi_df = odi_df.rename(columns={'ADI_NATRANK':'adi_score'})
     odi_quality_df = odi_df[odi_df['risk_1_timestamp'] != '[not completed]']
     #odi_df['adi_score']  = odi_df['adi_score'].astype(int)
     # Create a figure and a set of subplots
-    fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(nrows=2, ncols=3, figsize=(15, 7))
-    axes = [ax1, ax2, ax3, ax4, ax5, ax6]
+    fig, ((ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9)) = plt.subplots(nrows=3, ncols=3, figsize=(15, 7))
+    axes = [ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
+    ax7 = pred_choice[1]
+    ax8 = pred_risk[1]
 
     sns.histplot(odi_quality_df['age'], ax=axes[0])
     sns.histplot(odi_quality_df['height_m'], ax=axes[1])
@@ -93,7 +98,6 @@ def survey_patient_page():
     image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
     
     return jsonify({'image': image_base64})
-    # return {"predicted_choice": pred_choice}
 
 # surgeon will enter values for percent complication and percent improvement
 @app.route("/survey/surgeon")
