@@ -1,4 +1,5 @@
 import pickle
+import shap
 from .data_processing import ml_model_prep
 from .drop_unbalanced_features import DropUnbalancedFeatures
 
@@ -9,17 +10,35 @@ def predict_risk_model(df):
     # Load the pickle and apply it
     with open('./data/ml_models/risk_model.pkl', 'rb') as f:
         model = pickle.load(f)
+
+    # Load SHAP explainer
+    with open('./data/ml_models/risk_model_shap.pkl', 'rb') as f:
+        explainer = pickle.load(f)
+
+    # Save SHAP plot
+    shap_values = explainer(X)
+    shap_plot = shap.plots.bar(shap_values)
+
     pred = model.predict(X)
-    return pred
+    return (pred, shap_plot)
 
 
 def predict_choice_model(df):
     """Applies transformations and calls the choice model"""
     X = ml_model_prep(df, model_type='choice_model')
+    
     # Load the pickle and apply it
     with open('./data/ml_models/choice_model.pkl', 'rb') as f:
         model = pickle.load(f)
     
+    # Load SHAP explainer
+    with open('./data/ml_models/choice_model_shap.pkl', 'rb') as f:
+        explainer = pickle.load(f)
+    
+    # Save SHAP plot
+    shap_values = explainer(X)
+    shap_plot = shap.plots.bar(shap_values)
+
     pred = model.predict(X)
     # If predicted value is less than 0, make it 0
     pred = [0 if p < 0 else p for p in pred]
@@ -27,4 +46,4 @@ def predict_choice_model(df):
     pred = [5 if p > 5 else p for p in pred]
     # Multiply by 20 to bring predictions to 0-100 scale
     pred = [p * 20 for p in pred]
-    return pred
+    return (pred, shap_plot)

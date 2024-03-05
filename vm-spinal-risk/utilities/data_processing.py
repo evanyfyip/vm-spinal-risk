@@ -470,25 +470,13 @@ def choice_model_prep(df, ml_df):
     return model_data
 
 def preprocessing(df):
-    out_df = df.drop(['odi_1', 'odi_2', 'odi_3',
-    'odi_4', 'odi_5', 'odi_6', 'odi_7', 'odi_8', 'odi_9', 'odi_10',
-    'exer_50improv_1drop', 'exer_50improv_10drop', 'exer_50improv_50drop',
-    'exer_50improv_90drop', 'att_check_1', 'exer_90improv_1drop',
-    'exer_90improv_10drop', 'exer_90improv_50drop', 'exer_90improv_90drop',
-    'exer_50pain_1death', 'exer_50pain_10death', 'exer_50pain_50death',
-    'exer_90pain_1death', 'exer_90pain_10death', 'exer_90pain_50death',
-    'work_50improv_1drop', 'work_50improv_10drop', 'work_50improv_50drop',
-    'work_50improv_90drop', 'work_90improv_1drop', 'work_90improv_10drop',
-    'work_90improv_50drop', 'work_50improv_1para', 'work_50improv_10para',
-    'work_50improv_50para', 'work_50improv_90para', 'work_90improv_1para',
-    'work_90improv_10para', 'att_check2', 'work_90improv_50para',
-    'work_50improv_1death', 'work_50improv_10death',
-    'work_50improv_50death', 'work_90improv_1death',
-    'work_90improv_10death', 'work_90improv_50death', 'att_pass',
-    'risk_1_complete','height', 'weight', 'record_id', 'risk_1_timestamp', 
-    'zipcode','age_range', 'postal_code','state_code','city',
-    'province', 'province_code','latitude', 'longitude', 'FIPS', 'fips', 'GISJOIN', 'state',
-    'activity', 'comp', 'pct_improv', 'pct_comp'], axis=1, errors='ignore')
+    # Categorize the columns fo the preprocessing pipeline
+    ohe_cols = ["religion", "ethnicity"]
+    cat_cols = ["sex", "income", "education", "prior_surg", "spin_surg", "succ_surg"]
+    num_cols = ["age", "odi_final", "bmi", "dospert_ethical", "dospert_financial", "dospert_health/safety", "dospert_recreational", "dospert_social", "height_m", "weight_kg", "ADI_NATRANK", "ADI_STATERNK"]
+    
+    out_df = df.copy()
+    out_df = out_df[ohe_cols + cat_cols + num_cols]
     out_df['ADI_NATRANK'] = pd.to_numeric(out_df['ADI_NATRANK'], errors='coerce').astype(float).astype('Int64')
     out_df['ADI_STATERNK'] = pd.to_numeric(out_df['ADI_STATERNK'], errors='coerce').astype(float).astype('Int64')
     return out_df
