@@ -36,8 +36,9 @@ const Navbar = () => {
           </Typography> */}
 		  <img src={'/virginiamason.png'} alt="Logo" style={{ height: '40px', marginRight: '10px' }} />
           <Button color="inherit" component={RouterLink} to="/" style={{ color: 'black' }}>Home</Button>
-          {/* <Button color="inherit" component={RouterLink} to="/survey/patient" style={{ color: 'black' }}>Survey</Button> */}
+          {/* <Button color=z "inherit" component={RouterLink} to="/survey/patient" style={{ color: 'black' }}>Survey</Button> */}
           <Button color="inherit" component={RouterLink} to="/about" style={{ color: 'black' }}>About</Button>
+		      <Button color="inherit" component={RouterLink} to="/survey/patient" style={{ color: 'black' }}>survey</Button>
           <Button color="inherit" component={RouterLink} to="/TestPlot" style={{ color: 'black' }}>Plots</Button>
           <Button color="inherit" component={RouterLink} to="/admin" style={{ color: 'black' }}>Admin</Button>
         </Toolbar>
