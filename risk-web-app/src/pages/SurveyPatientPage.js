@@ -1,4 +1,4 @@
-import {React, useCallback, useState, useRef } from 'react';
+import { React, useCallback, useState, useRef } from 'react';
 
 import 'survey-core/defaultV2.min.css';
 import { Model } from 'survey-core';
@@ -12,63 +12,13 @@ function SurveyPatientPage() {
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
   const [modelPrediction, setModelPrediction] = useState("");
   const testSurveyResponse = {
-    "test_question": 1,
-    "age": 23,
-    "sex": 1,
-    "height": 17,
-    "weight": 125,
-    "zipcode": "98053",
-    "ethnicity": 4,
-    "income": 11,
-    "education": 7,
-    "prior_surg": 0,
-    "religion": 2,
-    "odi_1": 1,
-    "odi_2": 1,
-    "odi_3": 1,
-    "odi_4": 1,
-    "odi_5": 1,
-    "odi_6": 1,
-    "odi_7": 1,
-    "odi_8": 1,
-    "odi_9": 1,
-    "odi_10": 1,
-    "dospert_1": 7,
-    "dospert_2": 7,
-    "dospert_3": 1,
-    "dospert_4": 5,
-    "dospert_5": 2,
-    "dospert_6": 1,
-    "dospert_7": 5,
-    "dospert_8": 1,
-    "dospert_9": 1,
-    "dospert_10": 1,
-    "dospert_11": 6,
-    "dospert_12": 2,
-    "dospert_13": 2,
-    "dospert_14": 1,
-    "dospert_15": 2,
-    "dospert_16": 3,
-    "dospert_17": 1,
-    "dospert_18": 1,
-    "dospert_19": 7,
-    "dospert_20": 1,
-    "dospert_21": 3,
-    "dospert_22": 5,
-    "dospert_23": 2,
-    "dospert_24": 2,
-    "dospert_25": 2,
-    "dospert_26": 2,
-    "dospert_27": 3,
-    "dospert_28": 4,
-    "dospert_29": 1,
-    "dospert_30": 1,
-    "type_improvement": 0,
-    "percent_improvement": 50,
-    "type_complication": 1,
-    "percent_complication": 50
-}
+    "test_question": 1, "age": 23, "sex": 1, "height": 17, "weight": 125, "zipcode": "98053", "ethnicity": 4, "income": 11, "education": 7, "prior_surg": 0, "religion": 2,
+    "odi_1": 1, "odi_2": 1, "odi_3": 1, "odi_4": 1, "odi_5": 1, "odi_6": 1, "odi_7": 1, "odi_8": 1, "odi_9": 1, "odi_10": 1,
+    "dospert1": 7, "dospert2": 7, "dospert3": 1, "dospert4": 5, "dospert5": 2, "dospert6": 1, "dospert7": 5, "dospert8": 1, "dospert9": 1, "dospert10": 1, "dospert11": 6, "dospert12": 2, "dospert13": 2, "dospert14": 1, "dospert15": 2, "dospert16": 3, "dospert17": 1, "dospert18": 1, "dospert19": 7, "dospert20": 1, "dospert21": 3, "dospert22": 5, "dospert23": 2, "dospert24": 2, "dospert25": 2, "dospert26": 2, "dospert27": 3, "dospert28": 4, "dospert29": 1, "dospert30": 1,
+    "activity": 0, "percent_improv": 50, "comp": 1, "percent_comp": 50
+  }
 
+  // send the survey result to te backend endpoint
   const sendSurveyResult = (data) => {
     axios.post('/survey/predict', data)
       .then(response => {
@@ -79,8 +29,9 @@ function SurveyPatientPage() {
       });
   };
 
+  // set survey results variable, call sendSurveyResult, and set surveyCompleted to true
   const displayResults = useCallback((sender) => {
-    if (sender.data["test_question"] == 1){
+    if (sender.data["test_question"] == 1) {
       setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
       sendSurveyResult(testSurveyResponse)
     } else {
@@ -107,41 +58,10 @@ function SurveyPatientPage() {
             {modelPrediction}
           </code>
         </>
-        )
+      )
       }
     </>
   );
-
-  // const displayResults = useCallback((sender) => {
-  //   if (sender.data["test_question"] == 1){
-  //     setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
-  //   } else {
-  //     setSurveyResults(JSON.stringify(sender.data, null, 4));
-  //   }
-  //   sendSurveyResult(surveyResults)
-  //   setIsSurveyCompleted(true);
-  // }, []);
-
-  // survey.onComplete.add(displayResults);
-
-  // return (
-  //   <>
-  //     <Survey model={survey} id="surveyContainer" />
-  //     {isSurveyCompleted && (
-  //       <>
-  //         <p>Sent to backend:</p>
-  //         <code style={{ whiteSpace: 'pre' }}>
-  //           {surveyResults}
-  //         </code>
-  //         <p>Prediction Result (received from backend):</p>
-  //         <code style={{ whiteSpace: 'pre' }}>
-  //           {modelPrediction}
-  //         </code>
-  //       </>
-  //       )
-  //     }
-  //   </>
-  // );
 }
 
 export default SurveyPatientPage;

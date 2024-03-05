@@ -1,11 +1,24 @@
-import pandas as pd
 import os
+import sys
+utilitiesRootDir = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "vm-spinal-risk")
+sys.path.insert(0, utilitiesRootDir)
+os.chdir(utilitiesRootDir)
+
+# Import local modules
+from utilities import data_processing as dp_utils
+from utilities.drop_unbalanced_features import DropUnbalancedFeatures
+from utilities.ml_models import predict_choice_model, predict_risk_model
+
+import pandas as pd
 import time
+
 from flask import Flask, request, jsonify
 
-app = Flask(__name__)
+# For reload purposes
+import importlib
+importlib.reload(dp_utils)
 
-# data = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "vm-spinal-risk", "data", "all_risk_processed.csv"))
+app = Flask(__name__)
 
 # home page of the project with basic information
 @app.route('/home')
@@ -16,19 +29,26 @@ def landing_page():
 # the results from the preoperation survey including ODI, dospert, etc. is input into the model, model sends back distribution images for risk, dospert, 
 @app.route("/survey/predict", methods=["POST"])
 def survey_patient_page():
+    os.chdir(utilitiesRootDir)
+    print(os.getcwd())
     result = request.get_json(silent=False)
+    del result["test_question"]
     if "spin_surg" not in result and "succ_surg" not in result:
         result["spin_surg"] = None
         result["succ_surg"] = None
-    print(f"result received from frontend: {result}")
-    # model goes here
 
-    # model predicts
+    # preprocess data into correct format
+    df = pd.DataFrame([result])
+    df_features = dp_utils.get_data_features(df)
+    print(df_features.columns)
 
-    # model returns percentile information
-     
-    return jsonify(result)
+    # model predictions
+    pred_choice = predict_choice_model(df_features)
+    # pred_risk = predict_risk_model(df_features)
+
+    # return {"predicted_choice": pred_choice, "predicted_risk": pred_risk}
     # return redirect(url_for("index"))
+    return result
 
 # surgeon will enter values for percent complication and percent improvement
 @app.route("/survey/surgeon")

@@ -5,8 +5,9 @@ export const surveyJson = {
             elements: [
                 {
                     type: "html",
-                    html: "<h4>In this preoperation survey, we will ask you questions pertaining to your ODI and personality.</h4>"
+                    html: "<h4>In this preoperation survey, we will ask you questions pertaining to your demographics and personality.</h4>"
                 },
+                // TODO: remove this question for production
                 {
                     name: "test_question",
                     title: "Use test result?",
@@ -24,7 +25,7 @@ export const surveyJson = {
             elements: [
                 {
                     type: "html",
-                    html: "<h4>Demographics page will go here</h4>"
+                    html: "<h4>The first 10 questions will ask about your current physical attributes like age, sex, height, weight and socioeconomic status.</h4>"
                 },
                 {
                     name: "age",
@@ -384,7 +385,7 @@ export const surveyJson = {
            covering areas such as financial decisions, health/safety, recreational pursuits, ethical choices, and social decisions.</h4>"
                 },
                 {
-                    name: "dospert_1",
+                    name: "dospert1",
                     title: "Admitting that your tastes are different from those of a friend.",
                     type: "radiogroup",
                     choices: [
@@ -399,7 +400,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_2",
+                    name: "dospert2",
                     title: "Going camping in the wilderness.",
                     type: "radiogroup",
                     choices: [
@@ -414,7 +415,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_3",
+                    name: "dospert3",
                     title: "Betting a day's income at the horse races.",
                     type: "radiogroup",
                     choices: [
@@ -429,7 +430,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_4",
+                    name: "dospert4",
                     title: "Investing 10% of your annual income in a moderate growth mutual fund.",
                     type: "radiogroup",
                     choices: [
@@ -444,7 +445,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_5",
+                    name: "dospert5",
                     title: "Drinking heavily at a social function.",
                     type: "radiogroup",
                     choices: [
@@ -459,7 +460,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_6",
+                    name: "dospert6",
                     title: "Taking some questionable deductions on your income tax return.",
                     type: "radiogroup",
                     choices: [
@@ -474,7 +475,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_7",
+                    name: "dospert7",
                     title: "Disagreeing with an authority figure on a major issue.",
                     type: "radiogroup",
                     choices: [
@@ -489,7 +490,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_8",
+                    name: "dospert8",
                     title: "Betting a day's income at a high-stake poker game.",
                     type: "radiogroup",
                     choices: [
@@ -504,7 +505,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_9",
+                    name: "dospert9",
                     title: "Having an affair with a married man/woman.",
                     type: "radiogroup",
                     choices: [
@@ -519,7 +520,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_10",
+                    name: "dospert10",
                     title: "Passing off somebody else's work as your own.",
                     type: "radiogroup",
                     choices: [
@@ -534,7 +535,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_11",
+                    name: "dospert11",
                     title: "Going down a ski run that is beyond your ability.",
                     type: "radiogroup",
                     choices: [
@@ -549,7 +550,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_12",
+                    name: "dospert12",
                     title: "Investing 5% of your annual income in a very speculative stock.",
                     type: "radiogroup",
                     choices: [
@@ -564,7 +565,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_13",
+                    name: "dospert13",
                     title: "Going whitewater rafting at high water in the spring.",
                     type: "radiogroup",
                     choices: [
@@ -579,7 +580,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_14",
+                    name: "dospert14",
                     title: "Betting a day's income on the outcome of a sporting event",
                     type: "radiogroup",
                     choices: [
@@ -594,7 +595,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_15",
+                    name: "dospert15",
                     title: "Engaging in unprotected sex.",
                     type: "radiogroup",
                     choices: [
@@ -609,7 +610,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_16",
+                    name: "dospert16",
                     title: "Revealing a friend's secret to someone else.",
                     type: "radiogroup",
                     choices: [
@@ -624,7 +625,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_17",
+                    name: "dospert17",
                     title: "Driving a car without wearing a seat belt.",
                     type: "radiogroup",
                     choices: [
@@ -639,7 +640,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_18",
+                    name: "dospert18",
                     title: "Investing 10% of your annual income in a new business venture.",
                     type: "radiogroup",
                     choices: [
@@ -654,7 +655,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_19",
+                    name: "dospert19",
                     title: "Taking a skydiving class.",
                     type: "radiogroup",
                     choices: [
@@ -669,7 +670,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_20",
+                    name: "dospert20",
                     title: "Riding a motorcycle without a helmet.",
                     type: "radiogroup",
                     choices: [
@@ -684,7 +685,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_21",
+                    name: "dospert21",
                     title: "Choosing a career that you truly enjoy over a more secure one.",
                     type: "radiogroup",
                     choices: [
@@ -699,7 +700,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_22",
+                    name: "dospert22",
                     title: "Speaking your mind about an unpopular issue in a meeting at work.",
                     type: "radiogroup",
                     choices: [
@@ -714,7 +715,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_23",
+                    name: "dospert23",
                     title: "Sunbathing without sunscreen.",
                     type: "radiogroup",
                     choices: [
@@ -729,7 +730,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_24",
+                    name: "dospert24",
                     title: "Bungee jumping off a tall bridge.",
                     type: "radiogroup",
                     choices: [
@@ -744,7 +745,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_25",
+                    name: "dospert25",
                     title: "Piloting a small plane.",
                     type: "radiogroup",
                     choices: [
@@ -759,7 +760,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_26",
+                    name: "dospert26",
                     title: "Walking home alone at night in an unsafe area of town.",
                     type: "radiogroup",
                     choices: [
@@ -774,7 +775,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_27",
+                    name: "dospert27",
                     title: "Moving to a city far away from your extended family.",
                     type: "radiogroup",
                     choices: [
@@ -789,7 +790,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_28",
+                    name: "dospert28",
                     title: "Starting a new career in your mid-thirties.",
                     type: "radiogroup",
                     choices: [
@@ -804,7 +805,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_29",
+                    name: "dospert29",
                     title: "Leaving your young children alone at home while running an errand.",
                     type: "radiogroup",
                     choices: [
@@ -819,7 +820,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "dospert_30",
+                    name: "dospert30",
                     title: "Not returning a wallet you found that contains $200.",
                     type: "radiogroup",
                     choices: [
@@ -850,7 +851,7 @@ export const surveyJson = {
         {
             elements: [
                 {
-                    name: "type_improvement",
+                    name: "actvity",
                     title: "What type of improvement?",
                     type: "radiogroup",
                     choices: [
@@ -860,7 +861,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "percent_improvement",
+                    name: "percent_improv",
                     title: "What percentage of improvement?",
                     type: "radiogroup",
                     choices: [
@@ -870,7 +871,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "type_complication",
+                    name: "comp",
                     title: "What type of complication?",
                     type: "radiogroup",
                     choices: [
@@ -881,7 +882,7 @@ export const surveyJson = {
                     isRequired: true
                 },
                 {
-                    name: "percent_complication",
+                    name: "percent_comp",
                     title: "What percentage of complication?",
                     type: "radiogroup",
                     choices: [

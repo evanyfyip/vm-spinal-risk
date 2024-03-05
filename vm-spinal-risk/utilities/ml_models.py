@@ -1,5 +1,6 @@
 import pickle
 from .data_processing import ml_model_prep
+from .drop_unbalanced_features import DropUnbalancedFeatures
 
 
 def predict_risk_model(df):

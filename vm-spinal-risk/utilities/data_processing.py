@@ -231,7 +231,7 @@ dospert_registry = {
     "social": [1, 7, 21, 22, 27, 28]
     }
 
-def get_dospert_scores(df: pd.DataFrame, idx_start: int) -> pd.DataFrame:
+def get_dospert_scores(df: pd.DataFrame) -> pd.DataFrame:
     """
     args:
         df (pd.DataFrame): dataframe of survey responses to the survey
@@ -387,7 +387,7 @@ def get_spinal_risk_score(df, scale=True):
         else:
             comp_type.append(comp_weights['death'])
 
-    for index, row in risk_df.iterrows():
+    for idx, row in risk_df.iterrows():
         spinal_risk_sum = 0 
         for i in range(len(risk_df.columns)):
             # Inverting the options
@@ -429,7 +429,7 @@ def manual_drop_records(df):
 def get_data_features(df):
     """This function expects a pandas dataframe with all of the data features"""
     features_df = get_odi_score(df)
-    features_df = get_dospert_scores(df, 60)
+    features_df = get_dospert_scores(features_df)
     features_df['height_m'] = features_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
     features_df['weight_kg'] = features_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
     features_df['bmi'] = features_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
