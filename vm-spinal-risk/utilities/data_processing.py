@@ -387,7 +387,7 @@ def get_spinal_risk_score(df, scale=True):
         else:
             comp_type.append(comp_weights['death'])
 
-    for index, row in risk_df.iterrows():
+    for idx, row in risk_df.iterrows():
         spinal_risk_sum = 0 
         for i in range(len(risk_df.columns)):
             # Inverting the options

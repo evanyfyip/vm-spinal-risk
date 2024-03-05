@@ -1,141 +1,43 @@
-import {React, useCallback, useState, useRef } from 'react';
+import { React, useCallback, useState, useRef } from 'react';
 
 import 'survey-core/defaultV2.min.css';
 import { Model } from 'survey-core';
 import { Survey } from 'survey-react-ui';
 import axios from 'axios';
-
-const surveyJson = {
-  pages: [
-    // INTRO PAGE
-    {
-      elements: [{
-        type: "html",
-        html: "<h4>In this preoperation survey, we will ask you questions pertaining to your ODI and personality.</h4>"
-      }]
-    }, 
-    // PAGE 1 DEMOGRAPHICS 
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>Do we need a demographics page???</h4>"
-        }
-      ]
-    },
-    // PAGE 2 ODI
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>The next 10 questions will ask questions about how your back pain (If you have any) has affected your ability to manage everyday life.</h4>"
-        },
-        {
-          name: "odi_1",
-          title: "PAIN INTENSITY",
-          type: "radiogroup",
-          choices: [
-            { value: 6, text: "I can tollerate..." },
-            { value: 5, text: "The pain is bad..." },
-            { value: 4, text: "Pain killers give complete..." },
-            { value: 3, text: "Pain killers give moderate..." },
-            { value: 2, text: "Pain killers give very little..." },
-            { value: 1, text: "Pain killers have no effect..." }
-          ],
-          isRequired: true
-        }
-      ]
-    },
-    // PAGE 3 DOSPERT
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>In the next 30 questions, you will assess the likelihood of your engagement in various activities,\
-           covering areas such as financial decisions, health/safety, recreational pursuits, ethical choices, and social decisions.</h4>"
-        },
-        {
-          name: "dospert_1",
-          title: "Admitting that your tastes are different from those of a friend.",
-          type: "radiogroup",
-          choices: [
-            { value: 7, text: "Extremely likely" },
-            { value: 6, text: "Moderately likely" },
-            { value: 5, text: "Somewhat likely" },
-            { value: 4, text: "Not sure" },
-            { value: 3, text: "Somewhat unlikely" },
-            { value: 2, text: "Moderately unlikely" },
-            { value: 1, text: "Extremely unlikely" }
-          ],
-          isRequired: true
-        }
-      ]
-    },
-    // PAGE 4 HAND SURVEY TO SURGEON
-    {
-      elements: [
-        {
-          type:"html",
-          html: "<h4>Please hand device over to surgeon.</h4>"
-        }
-      ]
-    },
-    // PAGE 5 SURGEON INPUT
-    {
-      elements: [
-        {
-          name: "percent_improvement",
-          title: "What percentage of improvement?",
-          type: "radiogroup",
-          choices: [
-            { value: 90, text: "90%" },
-            { value: 50, text: "50%" },
-            { value: 10, text: "10%" }
-          ],
-          isRequired: true
-        },
-        {
-          name: "percent_complication",
-          title: "What percentage of complication?",
-          type: "radiogroup",
-          choices: [
-            { value: 90, text: "90%" },
-            { value: 50, text: "50%" },
-            { value: 10, text: "10%" }
-          ],
-          isRequired: true
-        }
-      ]
-    }
-  ],
-  showQuestionNumbers: "on",
-  pageNextText: "Next",
-  completeText: "Submit",
-  showPrevButton: true,
-  firstPageIsStarted: true,
-  startSurveyText: "Take the Survey",
-  showProgressBar: "top",
-  showCompletedPage: false
-};
+import { surveyJson } from "./surveyJSON";
 
 function SurveyPatientPage() {
   const survey = useRef(new Model(surveyJson)).current;
   const [surveyResults, setSurveyResults] = useState("");
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
+  const testSurveyResponse = {
+    "test_question": 1, "age": 23, "sex": 1, "height": 17, "weight": 125, "zipcode": "98053", "ethnicity": 4, "income": 11, "education": 7, "prior_surg": 0, "religion": 2,
+    "odi_1": 1, "odi_2": 1, "odi_3": 1, "odi_4": 1, "odi_5": 1, "odi_6": 1, "odi_7": 1, "odi_8": 1, "odi_9": 1, "odi_10": 1,
+    "dospert1": 7, "dospert2": 7, "dospert3": 1, "dospert4": 5, "dospert5": 2, "dospert6": 1, "dospert7": 5, "dospert8": 1, "dospert9": 1, "dospert10": 1, "dospert11": 6, "dospert12": 2, "dospert13": 2, "dospert14": 1, "dospert15": 2, "dospert16": 3, "dospert17": 1, "dospert18": 1, "dospert19": 7, "dospert20": 1, "dospert21": 3, "dospert22": 5, "dospert23": 2, "dospert24": 2, "dospert25": 2, "dospert26": 2, "dospert27": 3, "dospert28": 4, "dospert29": 1, "dospert30": 1,
+    "activity": 0, "pct_improv": 50, "comp": 1, "pct_comp": 50
+  }
+  const [plotImage, setPlotImage] = useState('');
 
+  // send the survey result to te backend endpoint
   const sendSurveyResult = (data) => {
     axios.post('/survey/predict', data)
       .then(response => {
-        console.log(response.data);
+        setPlotImage(`data:image/png;base64,${response.data.image}`);
       })
       .catch(error => {
-        console.error('Error submitting survey:', error);
+        console.error('Axios error:', error);
       });
   };
 
+  // set survey results variable, call sendSurveyResult, and set surveyCompleted to true
   const displayResults = useCallback((sender) => {
-    setSurveyResults(JSON.stringify(sender.data, null, 4));
-    sendSurveyResult(sender.data)
+    if (sender.data["test_question"] == 1) {
+      setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
+      sendSurveyResult(testSurveyResponse)
+    } else {
+      setSurveyResults(JSON.stringify(sender.data, null, 4));
+      sendSurveyResult(sender.data)
+    }
     setIsSurveyCompleted(true);
   }, []);
 
@@ -146,13 +48,14 @@ function SurveyPatientPage() {
       <Survey model={survey} id="surveyContainer" />
       {isSurveyCompleted && (
         <>
-          <h1>AFTER THIS QUESTION, SEND RESULTS TO MODEL THROUGH API POST REQUEST AND DISPLAY RESULTS PAGE WITH VISUALS</h1>
-          <p>Result JSON:</p>
+          <p>Survey Result sent to backend:</p>
           <code style={{ whiteSpace: 'pre' }}>
             {surveyResults}
           </code>
+
+          {plotImage && <img src={plotImage} alt="Generated Plot" />}
         </>
-        )
+      )
       }
     </>
   );

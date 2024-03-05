@@ -1,6 +1,8 @@
 import pickle
 import shap
 from .data_processing import ml_model_prep
+from .drop_unbalanced_features import DropUnbalancedFeatures
+import matplotlib.pyplot as plt
 
 
 def predict_risk_model(df):
@@ -16,10 +18,11 @@ def predict_risk_model(df):
 
     # Save SHAP plot
     shap_values = explainer(X)
-    shap_plot = shap.plots.bar(shap_values, show=False)
+    shap.plots.bar(shap_values[0], show=False)
+    x = plt.gcf()
 
     pred = model.predict(X)
-    return (pred, shap_plot)
+    return (pred, x)
 
 
 def predict_choice_model(df):
@@ -36,7 +39,8 @@ def predict_choice_model(df):
     
     # Save SHAP plot
     shap_values = explainer(X)
-    shap_plot = shap.plots.bar(shap_values, show=False)
+    shap.plots.bar(shap_values[0], show=False)
+    x = plt.gcf()
 
     pred = model.predict(X)
     # If predicted value is less than 0, make it 0
@@ -45,4 +49,4 @@ def predict_choice_model(df):
     pred = [5 if p > 5 else p for p in pred]
     # Multiply by 20 to bring predictions to 0-100 scale
     pred = [p * 20 for p in pred]
-    return (pred, shap_plot)
+    return (pred, x)
