@@ -3,6 +3,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Grid, Typography, Button, Box } from '@mui/material';
 
 function QuestionsHero() {
+  const handleClick = () => {
+    window.scrollTo(0, 0);
+  };
   return (
     <Box
       sx={{
@@ -23,7 +26,7 @@ function QuestionsHero() {
                                                 color: '#fff', 
                                                 borderRadius: '20px', 
                                                 boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                                                 }}>
+                                                 }} onClick={handleClick}>
             Learn More
           </Button>
     </Box>

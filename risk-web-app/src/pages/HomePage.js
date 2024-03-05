@@ -4,9 +4,7 @@ import { Grid, Card, CardContent, Typography, Button } from '@mui/material';
 import QuestionsHero from '../components/questionsHero';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import IconCard from '../components/Iconcard';
-import InfoIcon from '@mui/icons-material/Info';
-import Container from '@mui/material/Container';
+
 
 
 const features = [
@@ -40,7 +38,7 @@ function FeaturesSection() {
       <div style={{ padding: '40px', backgroundColor: '#FFFFFF' }}>
         <Hero />
       </div>
-      <div style={{ padding: '40px', marginBottom:'10px',backgroundColor: '#cdb4db' }}> 
+      <div style={{ padding: '40px', marginBottom:'10px',backgroundColor: '#C08DFC' }}> 
         <Typography variant="h2" gutterBottom style={{ textAlign: 'center', color: 'white' }}>
           Core Features
         </Typography>
@@ -64,7 +62,7 @@ function FeaturesSection() {
                     )
 
                   )}
-                  <Typography variant="h5" component="h2" style={{ color: '#42c333' }}>
+                  <Typography variant="h5" component="h2" style={{ color: '#3a0ca3' }}>
                     {feature.title}
                   </Typography>
                   <Typography variant="body2" component="p">
