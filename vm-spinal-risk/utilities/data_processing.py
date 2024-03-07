@@ -500,7 +500,8 @@ def ml_model_prep(df, model_type):
         choice_ml_df = choice_model_prep(df, ml_df)
         with open('./data/ml_models/choice_model_best_degree.pkl', 'rb') as f:
             best_degree = pickle.load(f)
-        choice_ml_df = PolynomialFeatures(degree=best_degree).fit_transform(choice_ml_df)
+        if best_degree > 1:
+            choice_ml_df = PolynomialFeatures(degree=best_degree).fit_transform(choice_ml_df)
         return choice_ml_df
     elif model_type == 'risk_model':
         # Additional polynomial transformations
