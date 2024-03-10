@@ -42,6 +42,7 @@ os.chdir(utilitiesRootDir)
 odi_df = odi_df.rename(columns={'ADI_NATRANK':'adi_score'})
 odi_quality_df = odi_df[odi_df['risk_1_timestamp'] != '[not completed]']
 
+
 # home page of the project with basic information
 @app.route('/home')
 def landing_page():
@@ -60,6 +61,7 @@ def survey_patient_page():
     # preprocess data into correct dataframe format
     df = pd.DataFrame([result])
     df_features = dp_utils.get_data_features(df)
+    # print(df_features.T)
 
     # create model predictions
     pred_choice, choice_shap_values = predict_choice_model(df_features)
@@ -68,39 +70,31 @@ def survey_patient_page():
     print(f"predicted patient risk score: {pred_risk[0]}")
 
     # Create a figure and a set of subplots
-    fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(nrows=2, ncols=3, figsize=(14, 10))
-    axes = [ax1, ax2, ax3, ax4, ax5, ax6]
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(14, 10))
+    axes = [ax1, ax2, ax3, ax4]
 
     # create plots
     sns.histplot(odi_quality_df['age'], ax=axes[0])
-    sns.histplot(odi_quality_df['height_m'], ax=axes[1])
-    sns.histplot(odi_quality_df['weight_kg'].sort_values(), ax=axes[2])
-    sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[3])
-    sns.histplot(odi_quality_df['adi_score'].sort_values(), ax=axes[4])
-    sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[5])
+    sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
+    sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=100)
+    sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
     plt.suptitle("Numerical variable distributions")
         
     # adjust the labels of the figure
     axes[0].set_xlabel("Age")
     axes[0].axvline(x=df_features["age"][0], color = 'r')
 
-    axes[1].set_xlabel("Height (m)")
-    axes[1].axvline(x=df_features["height_m"][0], color = 'r')
+    axes[1].set_xlabel("BMI")
+    axes[1].axvline(x=df_features["bmi"][0], color = 'r')
 
-    axes[2].set_xlabel("Weight (kg)")
-    axes[2].axvline(x=df_features["weight_kg"][0], color = 'r')
+    axes[2].set_xlabel("ADI National Ranking")
+    axes[2].set_yticks(range(0, 21, 4))
+    axes[2].set_xticks([1] + list(range(10, 101, 10)))
+    axes[2].set_xticklabels(["1"] + [str(n) for n in range(10, 101, 10)])
+    axes[2].axvline(x=int(df_features["ADI_NATRANK"][0]), color = 'r')
 
-    axes[3].set_xlabel("BMI")
-    axes[3].axvline(x=df_features["bmi"][0], color = 'r')
-
-    axes[4].set_xlabel("ADI National Ranking")
-    axes[4].tick_params(axis='x', labelrotation=90)
-    axes[4].set_xticks([1] + list(range(9, 100, 10)) + list(range(100, 103)))
-    axes[4].set_xticklabels(["1"] + [str(n) for n in range(10, 101, 10)] + ["GQ", "PH", "GQ-PH"])
-    axes[4].axvline(x=df_features["ADI_NATRANK"][0], color = 'r')
-
-    axes[5].set_xlabel("ODI")
-    axes[5].axvline(x=df_features["odi_final"][0], color = 'r')
+    axes[3].set_xlabel("ODI")
+    axes[3].axvline(x=df_features["odi_final"][0], color = 'r')
 
     plt.tight_layout()
 
@@ -113,6 +107,8 @@ def survey_patient_page():
 
     # prepare the choice model shap plot to be sent to the frontend
     shap.plots.bar(choice_shap_values, show=False)
+    plt.title("Choice Prediction for Given Risk Scenario SHAP Values")
+    plt.tight_layout()
     buf = BytesIO()
     plt.savefig(buf, format='png')
     plt.close() 
@@ -121,6 +117,8 @@ def survey_patient_page():
 
     # prepare the choice model shap plot to be sent to the frontend
     shap.plots.bar(risk_shap_values, show=False)
+    plt.title("Risk Score Prediction SHAP Values")
+    plt.tight_layout()
     buf = BytesIO()
     plt.savefig(buf, format='png')
     plt.close() 
