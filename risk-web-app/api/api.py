@@ -76,7 +76,7 @@ def survey_patient_page():
     # create plots
     sns.histplot(odi_quality_df['age'], ax=axes[0])
     sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
-    sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=100)
+    sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=50)
     sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
     plt.suptitle("Numerical variable distributions")
         
