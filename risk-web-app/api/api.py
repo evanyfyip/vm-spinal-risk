@@ -16,11 +16,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import base64
 import shap
-import io
 
 from flask import Flask, request, jsonify
 from io import BytesIO
-from flask import Flask, render_template, redirect, url_for, request, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_cors import cross_origin
 
@@ -42,12 +41,54 @@ os.chdir(utilitiesRootDir)
 odi_df = odi_df.rename(columns={'ADI_NATRANK':'adi_score'})
 odi_quality_df = odi_df[odi_df['risk_1_timestamp'] != '[not completed]']
 
+activity_registry = {
+    0: "exercise",
+    1: "work"
+}
 
-# home page of the project with basic information
-@app.route('/home')
-def landing_page():
-    return {'time': time.time()}
-    # return render_template('home.html')
+comp_registry = {
+    0: "foot drop",
+    1: "paralysis",
+    2: "death"
+}
+
+ethnicity_registry = {
+    1: "White" ,
+    2: "Black or African American" ,
+    3: "American Indian or Alaska Native" ,
+    4: "Asian or Pacific Islander" ,
+    5: "Hispanic, Latino, or Spanish origin" ,
+    6: "An ethnicity not listed here" ,
+    7: "Prefer not to say" 
+}
+
+sex_registry = {
+    1: "Male" ,
+    2: "Female" ,
+    3: "Intersex" ,
+    4: "Prefer not to say" 
+}
+
+income_registry = {
+    1: "Less than $10,000",
+    2: "$10,000-19,999",
+    3: "$20,000-29,999",
+    4: "$30,000-39,999",
+    5: "$40,000-49,999",
+    6: "$50,000-59,999",
+    7: "$60,000-69,999",
+    8: "$70,000-79,999",
+    9: "$80,000-89,999",
+    10: "$90,000-99,999" ,
+    11: "$100,000-$124,999" ,
+    12: "$125,000-$149,999" ,
+    13: "$150,000-$174,999" ,
+    14: "$175,000-$199,999" ,
+    15: "$200,000-$224,999" ,
+    16: "$225,000-$249,999" ,
+    17: "$250,000 or more" ,
+    18: "Prefer not to say" 
+}
 
 # the results from the preoperation survey including ODI, dospert, etc. is input into the model, model sends back distribution images for risk, dospert, 
 @app.route("/survey/predict", methods=["POST"])
@@ -66,7 +107,7 @@ def survey_patient_page():
     # create model predictions
     pred_choice, choice_shap_values = predict_choice_model(df_features)
     pred_risk, risk_shap_values = predict_risk_model(df_features)
-    print(f"patient will choose: {pred_choice[0]}")
+    print(f"probability of patient proceeding with surgery: {pred_choice[0]}")
     print(f"predicted patient risk score: {pred_risk[0]}")
 
     # Create a figure and a set of subplots
@@ -78,22 +119,25 @@ def survey_patient_page():
     sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
     sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=50)
     sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
-    plt.suptitle("Numerical variable distributions")
         
     # adjust the labels of the figure
     axes[0].set_xlabel("Age")
+    axes[0].set_title("US Population Age")
     axes[0].axvline(x=df_features["age"][0], color = 'r')
 
     axes[1].set_xlabel("BMI")
+    axes[1].set_title("US Population BMI")
     axes[1].axvline(x=df_features["bmi"][0], color = 'r')
 
     axes[2].set_xlabel("ADI National Ranking")
     axes[2].set_yticks(range(0, 21, 4))
     axes[2].set_xticks([1] + list(range(10, 101, 10)))
     axes[2].set_xticklabels(["1"] + [str(n) for n in range(10, 101, 10)])
+    axes[2].set_title("US Population ADI")
     axes[2].axvline(x=int(df_features["ADI_NATRANK"][0]), color = 'r')
 
     axes[3].set_xlabel("ODI")
+    axes[3].set_title("US Population ODI")
     axes[3].axvline(x=df_features["odi_final"][0], color = 'r')
 
     plt.tight_layout()
@@ -125,19 +169,25 @@ def survey_patient_page():
     buf.seek(0)
     risk_shap_plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 
-    # message = f"""For a surgical scenario that has {df_features["pct_improv"][0]}% chance of improvement
-    #     from {df_features["activity"][0]}
-    #     and a {df_features["pct_comp"][0]}% chance
-    #     of {df_features["comp"][0]},
-    #     this {df_features["age"][0]}-year old
-    #     {df_features["ethnicity"][0]}
-    #     {df_features["sex"][0]}
-    #     with an ODI of {df_features["odi_final"][0]},
-    #     BMI of {df_features["bmi"][0]},
-    #     ADI of {df_features["ADI_NATRANK"][0]},
-    #     an annual salary of $175,000-$199,999, dospert ethical 90%, dospert financial 80%, dospert health 90%, dospert recreational 10%, dospert social 30%, risk score of [risk], the likelihood of choosing surgery is 8%."""
-    return jsonify({'demo_plot': demo_base64, 'choice_plot': choice_shap_plot_base64, 'risk_plot': risk_shap_plot_base64})
-    # return jsonify({'demo_plot': demo_base64, 'choice_plot': choice_shap_plot_base64, 'risk_plot': risk_shap_plot_base64, 'pred_choice': pred_choice, 'pred_risk': pred_risk})
+    message_output = f"""For a surgical scenario that has {df_features["pct_improv"][0]}% chance of improvement
+        from {activity_registry[df_features["activity"][0]]}
+        and a {df_features["pct_comp"][0]}% chance
+        of {comp_registry[df_features["comp"][0]]},
+        this {df_features["age"][0]}-year old
+        {ethnicity_registry[df_features["ethnicity"][0]]}
+        {sex_registry[df_features["sex"][0]]}
+        with an ODI of {int(df_features["odi_final"][0])},
+        BMI of {df_features["bmi"][0]:.2f},
+        ADI of {df_features["ADI_NATRANK"][0]},
+        an annual salary of {income_registry[df_features["income"][0]]},
+        dospert ethical 90%,
+        dospert financial 80%,
+        dospert health 90%,
+        dospert recreational 10%,
+        dospert social 30%,
+        risk score of {pred_risk[0]:.2f},
+        the likelihood of choosing surgery is {pred_choice[0]:.2f}%."""
+    return jsonify({'demo_plot': demo_base64, 'choice_plot': choice_shap_plot_base64, 'risk_plot': risk_shap_plot_base64, 'message': message_output})
 
 # surgeon will enter values for percent complication and percent improvement
 @app.route("/survey/surgeon")

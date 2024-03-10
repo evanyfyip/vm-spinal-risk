@@ -19,8 +19,7 @@ function SurveyPatientPage() {
   const [demoPlot, setDemoPlot] = useState('');
   const [choiceShapPlot, setChoiceShapPlot] = useState('');
   const [riskShapPlot, setRiskShapPlot] = useState('');
-  const [predChoice, setPredChoice] = useState('');
-  const [predRisk, setPredRisk] = useState('');
+  const [messageOutput, setMessageOutput] = useState('');
 
   // send the survey result to te backend endpoint
   const sendSurveyResult = (data) => {
@@ -29,8 +28,7 @@ function SurveyPatientPage() {
         setDemoPlot(`data:image/png;base64,${response.data.demo_plot}`);
         setChoiceShapPlot(`data:image/png;base64,${response.data.choice_plot}`);
         setRiskShapPlot(`data:image/png;base64,${response.data.risk_plot}`);
-        // setPredChoice(data.pred_choice)
-        // setPredRisk(data.pred_risk)
+        setMessageOutput(response.data.message)
       })
       .catch(error => {
         console.error('Axios error:', error);
@@ -58,6 +56,7 @@ function SurveyPatientPage() {
         <>
           {/* The patient has a {predChoice} percent chance to proceed with surgery. The patient has a risk score of {predRisk}. */}
           <Fragment>
+            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{messageOutput}</div>
             <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{demoPlot && <img src={demoPlot} alt="Demographics Plot" />}</div>
             <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{choiceShapPlot && <img src={choiceShapPlot} alt="Choice Model SHAP Values Plot" />}</div>
             <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{riskShapPlot && <img src={riskShapPlot} alt="Risk Model SHAP Values Plot" />}</div>
