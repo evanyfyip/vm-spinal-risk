@@ -93,27 +93,28 @@ This directory is managed by npm and should not be manually modified. It contain
 
 ## Usage -  NEEDS TO BE UPDATED
 
-For more detailed instructions on how to set up the development environment, run the web application, or execute the analysis notebooks, please refer to the specific README files located within the `/risk-web-app` and `/vm-spinal-risk` directories.
+To use the spinal risk assessment model, follow these steps:
 
+### Downloads:
+a. Download conda <br>
+b. Download npm <br>
+
+### Environment setup:
 1. conda create -n vm-spinal-risk python=3.8.18 -y
 2. conda activate vm-spinal-risk
 3. git clone https://github.com/evanyfyip/vm-spinal-risk.git
-Use ssh if you have an ssh key set up: git clone git@github.com:evanyfyip/vm-spinal-risk.git 
+Use ssh if you have an ssh key set up: git clone git@github.com:evanyfyip/vm-spinal-risk.git
 5. cd vm-spinal-risk
-6. pip install -r requirements.txt
-7. cd risk-web-app
-8. npm install
-
-
-To use the spinal risk assessment model, follow these steps:
-### Environment setup
-a. Obtain API key from zipcode <br>
+6. Obtain API key from zipcode <br>
    1. Create an account [here](https://app.zipcodebase.com/register) <br>
    2. Generate an API key <br>
    3. Store API key in a .env file in the root directory<br>
       - *Note: Name it ZIPCODE_API_KEY=`your-api-key`*
+7. pip install -r requirements.txt
+8. cd risk-web-app
+9. npm install
 
-### Use case 1: Running the web application
+### Use case 1: Running the web application locally
 
 ### Use case 2: Recreating processed data and ML models
 1. **Preprocess Data:**
