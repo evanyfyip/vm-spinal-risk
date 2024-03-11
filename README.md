@@ -4,6 +4,22 @@
 
 This repository contains the code and resources for developing a predictive model for spinal risk assessments. The goal is to create a machine learning model that can accurately predict potential spinal surgery candidates assessment of spinal surgery risk given demographics, ODI, general risk assessments etc.
 
+**Aim 0: Data collection and design**
+We will design a survey that will be put onto a crowdsourcing platform such as MTurk, CloudResearch, or Prolific. The survey will give us insight into how the general public feels about undergoing surgery based on risk factors.
+
+**Aim 1: Exploratory Analysis -  ODI Distribution**
+A presentation of Age-based variations (per decade) of the "baseline" Oswestry Disability Index (ODI - which is a gold standard patient-reported outcome survey) in the general population. This will serve as an introduction to crowdsourcing platforms and establish important baseline data to help drive our future questions.
+
+**Aim 2: Risk score correlations**
+A model that demonstrates the relationship between a person's "risk" (financial, recreational activities, etc...) and their risk-taking attitudes towards their own health (spine care).
+Modeling: Linear regression, correlation coefficient
+
+**Aim 3: Predicting health (spinal) risk**
+The Goal: An algorithmic tool that allows us to collect several factors including socio-economic status, risk, expectations, medical comorbidities, etc. --- and provides us with some sort of score/percentage that places them into a specific treatment recommendation category (we will work on these categories). We can then apply this model to our patients to validate the model and tune parameters for the best fit.
+Modeling: Linear Regression, Decision tree, XGBoost, Random Forest, Bayesian modeling
+
+Feature Importance: SHAP values
+
 ## Installation
 
 If desired, create a new conda environment for the project.
@@ -63,33 +79,46 @@ For more detailed instructions on how to set up the development environment, run
 
 To use the spinal risk assessment model, follow these steps:
 
+### Use case 1: Recreating processed data and ML models
 1. **Preprocess Data:**
-   - Prepare your dataset following the format specified in the `data/` directory.
-   - Utilize the provided data preprocessing scripts if necessary.
-   a. Navigate to `vm-spinal-risk`
+   - This step only needs to be done if you want to recreate the steps to produce `data_processed/all_risk_processed.csv`.
+   - Prepare your dataset following the format specified in the `data/` directory. The default file is `RiskFinal_DATA_2024-02-05_0017_combined.csv`
+   a. Obtain API key from zipcode
+      1. Create an account [here](https://app.zipcodebase.com/register)
+      2. Generate an API key
+      3. Store API key in a .env file in the root directory
+         - *Note: Name it ZIPCODE_API_KEY=<your-api-key>*
+   b. Navigate to `vm-spinal-risk`
       ```bash
       cd vm-spinal-risk
       ```
-   b. Run the data_processing.py script
+   c. Run the data_processing.py script
       ```bash
       python utilities/data_processing.py
       ```
+      - *Note: If needed you have a new data file (csv) you will need to update the path in the data_procesing.py file*
 
-2. **Train Model:**
-   - Run the model training script with your preprocessed data:
-
+2. **Aim 1 and Aim 2 Analysis:**
+   - You should now have all the data files and packages necessary to run the notebooks in `aim1_exploratory_analysis` and `aim2_risk_score_correlations`
+   - Navigate to the normative_odi_eda.ipynb to regenerate plots and tables from Aim1.
+   - Navigate to those folders and run the notebooks as desired
+  
+     *Example: Opening normative_odi_eda.ipynb*
      ```bash
-     python train_model.py --data_path data/train_data.csv
+     cd notebooks/aim1_exploratory_analysis
+     ```
+     ```bash
+     jupyter notebook normative_odi_eda.ipnyb
      ```
 
-3. **Evaluate Model:**
-   - After training, assess the model's performance using the evaluation script:
-
-     ```bash
-     python evaluate_model.py --data_path data/test_data.csv --model_path saved_models/model_checkpoint.pth
-     ```
-4. **Predict Model:**
-   - Given a set of features, the model will return a spinal risk assessment score
+3. **Aim 3: Predictive modeling**
+   - The next step is to process the data for the machine learning models.
+  a. Navigate to `aim3_predictive_modeling` folder
+  b. Run each of the cells in the step1_ml_data_processing_pipeline.ipynb
+      - This will process the data and save the pipeline into a pickle object for later
+  c. Run the either the `step2_ml_pipeline_choice_model.ipynb` or the `step2_ml_pipeline_risk_model.ipynb` to recreate ML models
+      - This will generate plots and save the trained model into the `data/ml_models` folder
+      
 
 ## License
 
