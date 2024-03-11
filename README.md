@@ -80,6 +80,16 @@ This directory is managed by npm and should not be manually modified. It contain
 
 For more detailed instructions on how to set up the development environment, run the web application, or execute the analysis notebooks, please refer to the specific README files located within the `/risk-web-app` and `/vm-spinal-risk` directories.
 
+1. conda create -n vm-spinal-risk python=3.8.18 -y
+2. conda activate vm-spinal-risk
+3. git clone https://github.com/evanyfyip/vm-spinal-risk.git
+Use ssh if you have an ssh key set up: git clone git@github.com:evanyfyip/vm-spinal-risk.git 
+5. cd vm-spinal-risk
+6. pip install -r requirements.txt
+7. cd risk-web-app
+8. npm install
+
+
 To use the spinal risk assessment model, follow these steps:
 ### Environment setup
 a. Obtain API key from zipcode <br>
