@@ -79,11 +79,11 @@ For more detailed instructions on how to set up the development environment, run
 
 To use the spinal risk assessment model, follow these steps:
 ### Environment setup
-   a. Obtain API key from zipcode
-      1. Create an account [here](https://app.zipcodebase.com/register)
-      2. Generate an API key
-      3. Store API key in a .env file in the root directory
-         - *Note: Name it ZIPCODE_API_KEY=`your-api-key`*
+a. Obtain API key from zipcode <br>
+   1. Create an account [here](https://app.zipcodebase.com/register) <br>
+   2. Generate an API key <br>
+   3. Store API key in a .env file in the root directory<br>
+      - *Note: Name it ZIPCODE_API_KEY=`your-api-key`*
 
 ### Use case 1: Running the web application
 
