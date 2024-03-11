@@ -515,7 +515,8 @@ def main():
     processed_df = pd.read_csv('./data/RiskFinal_DATA_2024-02-05_0017_combined.csv')
     # Transforming features
     # second argument may change based on how the data looks, respecify the index where the dospert questions start.
-    processed_df = get_dospert_scores(processed_df, 60)
+    processed_df = get_odi_score(processed_df)
+    processed_df = get_dospert_scores(processed_df)
     processed_df['height_m'] = processed_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
     processed_df['weight_kg'] = processed_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
     processed_df['bmi'] = processed_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
