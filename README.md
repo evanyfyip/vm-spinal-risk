@@ -21,26 +21,30 @@ Modeling: Linear Regression, Decision tree, XGBoost, Random Forest, Bayesian mod
 Feature Importance: SHAP values
 
 ## Installation
+### First, ensure system packages are installed:
+- conda: [Link to Install Page](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+   - Scroll down to regular installation
+- nodejs: [Link to Install Page](https://nodejs.org/en/download)
+   - In the installation wizard, make sure npm is also installed
 
-If desired, create a new conda environment for the project.
-```
+### Second, execute the following commands in a conda terminal (search for "Anaconda Prompt (anaconda3)") to install all project dependencies:
+```bash
 conda create -n vm-spinal-risk python=3.8.18 -y
 conda activate vm-spinal-risk
+git clone https://github.com/evanyfyip/vm-spinal-risk.git
+cd vm-spinal-risk
+pip install -r requirements.txt
+cd risk-web-app
+npm install
 ```
+If you have an `ssh` key set up in GitHub, you can also clone the repository using `git clone git@github.com:evanyfyip/vm-spinal-risk.git`
 
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/evanyfyip/vm-spinal-risk.git
-   cd vm-spinal-risk
-   ```
-
-2. Install the required dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
+### Lastly, to start the app, you need two conda terminals - one to run the frontend and one to run the backend. Ensure the current directory of both terminals are `…/vm-spinal-risk/risk-web-app/` and both terminals have the conda environment activated (step 2 of the previous section)
+- Frontend:
+   - `npm start`
+- Backend:
+   - `cd api`
+   - `flask run --no-debugger -h localhost -p 5001`
 
 ## Project Structure
 The project is organized into three main directories:
