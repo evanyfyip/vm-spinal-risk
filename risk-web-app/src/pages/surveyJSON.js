@@ -851,7 +851,7 @@ export const surveyJson = {
         {
             elements: [
                 {
-                    name: "actvity",
+                    name: "activity",
                     title: "What type of improvement?",
                     type: "radiogroup",
                     choices: [
