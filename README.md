@@ -62,6 +62,9 @@ Below is a more detailed look into the `/risk-web-app` and `/vm-spinal-risk` com
 #### `/vm-spinal-risk`
 - `/data`: Datasets and related files used in the analysis.
   - Includes raw data, processed data, machine learning models, and training scripts organized by processing steps and model complexity (e.g., `polydegree1`, `polydegree2`).
+  - `data_raw/`
+     - `RiskFinal_DATA_2024-02-05_0017_combined.csv`: Final raw survey data from CloudResearch provided by Virginia Mason Spinal Research Team
+     - `nc-est2022-agesex.xlsx`: Census data from [census.gov](https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-detail.html)
 - `/documents`: Documentation related to the project's research and analysis.
 - `/figures`: Generated figures and plots, organized by analysis type (e.g., hyperparameter tuning, variance analysis).
 - `/notebooks`: Jupyter notebooks detailing the project's analysis, divided into aims or sections (e.g., exploratory analysis, predictive modeling).
