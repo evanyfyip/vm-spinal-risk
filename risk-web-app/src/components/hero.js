@@ -21,7 +21,7 @@ function Hero() {
           <Typography variant="body1" paragraph>
             Discover how our ML model is helping surgeons and patients better understand each other.
           </Typography>
-          <Button variant="contained" component={RouterLink} to="/survey/patient" style={{ backgroundColor: '#3a0ca3', 
+          <Button variant="contained" component={RouterLink} to="/survey" style={{ backgroundColor: '#3a0ca3', 
                                                 color: '#fff', 
                                                 borderRadius: '20px', 
                                                 boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',

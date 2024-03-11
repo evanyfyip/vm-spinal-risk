@@ -17,9 +17,6 @@ function AboutPage() {
                   the start of an ongoing project, and we (the MSDS Capstone team) hopes that this will be the framework for significant
                   progress in the future as we hand off the project to Virginia Mason Franciscan Health.
                 </Typography>
-                <Typography variant="h3" gutterBottom align="left">
-                About the team
-                </Typography>
                 <Typography variant="body1" gutterBottom style={{marginBottom:'20px'}}>
                   
                 </Typography>

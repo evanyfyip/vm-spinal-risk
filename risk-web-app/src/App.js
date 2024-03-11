@@ -11,7 +11,6 @@ import HomePage from './pages/HomePage';
 import SurveyPage from './pages/SurveyPage';
 import AdminPage from './pages/AdminPage';
 import AboutPage from './pages/AboutPage';
-import TestPlot from './pages/TestPlot'
 
 function App() {
   return (
@@ -22,7 +21,6 @@ function App() {
           <Route exact path="/" element={<HomePage />} />
           <Route path="/survey" element={<SurveyPage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/TestPlot" element={<TestPlot />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <Footer></Footer>

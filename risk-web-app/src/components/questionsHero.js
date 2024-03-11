@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Typography, Button, Box } from '@mui/material';
+import { Typography, Button, Box } from '@mui/material';
 
 function QuestionsHero() {
   const handleClick = () => {

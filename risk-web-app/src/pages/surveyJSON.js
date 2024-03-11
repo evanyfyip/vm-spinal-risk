@@ -10,7 +10,7 @@ export const surveyJson = {
                 // TODO: remove this question for production
                 {
                     name: "test_question",
-                    title: "Use test result?",
+                    title: "Would you like to bypass the survey and use a sample survey response?",
                     type: "radiogroup",
                     choices: [
                         { value: 1, text: "yes" },
