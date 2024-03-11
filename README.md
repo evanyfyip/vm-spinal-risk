@@ -78,27 +78,31 @@ This directory is managed by npm and should not be manually modified. It contain
 For more detailed instructions on how to set up the development environment, run the web application, or execute the analysis notebooks, please refer to the specific README files located within the `/risk-web-app` and `/vm-spinal-risk` directories.
 
 To use the spinal risk assessment model, follow these steps:
-
-### Use case 1: Recreating processed data and ML models
-1. **Preprocess Data:**
-   - This step only needs to be done if you want to recreate the steps to produce `data_processed/all_risk_processed.csv`.
-   - Prepare your dataset following the format specified in the `data/` directory. The default file is `RiskFinal_DATA_2024-02-05_0017_combined.csv`
+### Environment setup
    a. Obtain API key from zipcode
       1. Create an account [here](https://app.zipcodebase.com/register)
       2. Generate an API key
       3. Store API key in a .env file in the root directory
          - *Note: Name it ZIPCODE_API_KEY=<your-api-key>*
-   b. Navigate to `vm-spinal-risk`
+
+### Use case 1: Running the web application
+
+### Use case 2: Recreating processed data and ML models
+1. **Preprocess Data:**
+   - **Note:** If you don't care to recreate the processed data and pipelines, SKIP THIS STEP.
+   - This step only needs to be done if you want to recreate the steps to produce `data_processed/all_risk_processed.csv`.
+   - Prepare your dataset following the format specified in the `data/` directory. The default file is `RiskFinal_DATA_2024-02-05_0017_combined.csv`
+   a. Navigate to `vm-spinal-risk`
       ```bash
       cd vm-spinal-risk
       ```
-   c. Run the data_processing.py script
+   b. Run the data_processing.py script
       ```bash
       python utilities/data_processing.py
       ```
       - *Note: If needed you have a new data file (csv) you will need to update the path in the data_procesing.py file*
 
-2. **Aim 1 and Aim 2 Analysis:**
+3. **Aim 1 and Aim 2 Analysis:**
    - You should now have all the data files and packages necessary to run the notebooks in `aim1_exploratory_analysis` and `aim2_risk_score_correlations`
    - Navigate to the normative_odi_eda.ipynb to regenerate plots and tables from Aim1.
    - Navigate to those folders and run the notebooks as desired
@@ -111,7 +115,7 @@ To use the spinal risk assessment model, follow these steps:
      jupyter notebook normative_odi_eda.ipnyb
      ```
 
-3. **Aim 3: Predictive modeling**
+4. **Aim 3: Predictive modeling**
    - The next step is to process the data for the machine learning models.
   a. Navigate to `aim3_predictive_modeling` folder
   b. Run each of the cells in the step1_ml_data_processing_pipeline.ipynb
