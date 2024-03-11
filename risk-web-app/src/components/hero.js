@@ -7,7 +7,6 @@ function Hero() {
     <Box
       sx={{
         padding: '50px 20px',
-        backgroundImage: 'url(YourBackgroundImageUrl)',
         backgroundSize: 'cover',
         color: '#3a0ca3',
         textAlign: 'left',
