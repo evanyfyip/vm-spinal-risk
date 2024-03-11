@@ -6,9 +6,8 @@ import { Survey } from 'survey-react-ui';
 import axios from 'axios';
 import { surveyJson } from "./surveyJSON";
 
-function SurveyPatientPage() {
+function SurveyPage() {
   const survey = useRef(new Model(surveyJson)).current;
-  const [surveyResults, setSurveyResults] = useState("");
   const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
   const testSurveyResponse = {
     "test_question": 1, "age": 23, "sex": 1, "height": 17, "weight": 56.699, "zipcode": "98053", "ethnicity": 4, "income": 11, "education": 7, "prior_surg": 0, "religion": 2,
@@ -23,7 +22,7 @@ function SurveyPatientPage() {
 
   // send the survey result to te backend endpoint
   const sendSurveyResult = (data) => {
-    axios.post('/survey/predict', data)
+    axios.post('/survey', data)
       .then(response => {
         setDemoPlot(`data:image/png;base64,${response.data.demo_plot}`);
         setChoiceShapPlot(`data:image/png;base64,${response.data.choice_plot}`);
@@ -37,11 +36,9 @@ function SurveyPatientPage() {
 
   // set survey results variable, call sendSurveyResult, and set surveyCompleted to true
   const displayResults = useCallback((sender) => {
-    if (sender.data["test_question"] == 1) {
-      setSurveyResults(JSON.stringify(testSurveyResponse, null, 4));
+    if (sender.data["test_question"] === 1) {
       sendSurveyResult(testSurveyResponse)
     } else {
-      setSurveyResults(JSON.stringify(sender.data, null, 4));
       sendSurveyResult(sender.data)
     }
     setIsSurveyCompleted(true);
@@ -54,12 +51,11 @@ function SurveyPatientPage() {
       <Survey model={survey} id="surveyContainer" />
       {isSurveyCompleted && (
         <>
-          {/* The patient has a {predChoice} percent chance to proceed with surgery. The patient has a risk score of {predRisk}. */}
           <Fragment>
-            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{messageOutput}</div>
-            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{demoPlot && <img src={demoPlot} alt="Demographics Plot" />}</div>
-            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{choiceShapPlot && <img src={choiceShapPlot} alt="Choice Model SHAP Values Plot" />}</div>
-            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>{riskShapPlot && <img src={riskShapPlot} alt="Risk Model SHAP Values Plot" />}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{messageOutput}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{demoPlot && <img src={demoPlot} alt="Demographics Plot" />}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{choiceShapPlot && <img src={choiceShapPlot} alt="Choice Model SHAP Values Plot" />}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{riskShapPlot && <img src={riskShapPlot} alt="Risk Model SHAP Values Plot" />}</div>
           </Fragment>
         </>
       )
@@ -68,4 +64,4 @@ function SurveyPatientPage() {
   );
 }
 
-export default SurveyPatientPage;
+export default SurveyPage;

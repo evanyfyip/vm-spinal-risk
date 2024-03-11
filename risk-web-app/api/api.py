@@ -40,6 +40,7 @@ os.chdir(utilitiesRootDir)
 odi_df = odi_df.rename(columns={'ADI_NATRANK':'adi_score'})
 odi_quality_df = odi_df[odi_df['risk_1_timestamp'] != '[not completed]']
 
+# Create registries of the survey questions to translate the option number back to option text for the output message
 activity_registry = {
     0: "exercise",
     1: "work"
@@ -89,9 +90,10 @@ income_registry = {
     18: "Prefer not to say" 
 }
 
-# the results from the preoperation survey including ODI, dospert, etc. is input into the model, model sends back distribution images for risk, dospert, 
-@app.route("/survey/predict", methods=["POST"])
-def survey_patient_page():
+# the results from the preoperation survey including ODI, dospert, etc. is input into the model,
+# model sends back predictions and distribution images for demographics, dospert, and risk. 
+@app.route("/survey", methods=["POST"])
+def survey_page():
     result = request.get_json(silent=False)
     del result["test_question"]
     if "spin_surg" not in result and "succ_surg" not in result:
@@ -226,24 +228,76 @@ def survey_patient_page():
         the likelihood of choosing surgery is {pred_choice[0]:.2f}%."""
     return jsonify({'demo_plot': demo_base64, 'choice_plot': choice_shap_plot_base64, 'risk_plot': risk_shap_plot_base64, 'message': message_output})
 
-# surgeon will enter values for percent complication and percent improvement
-@app.route("/survey/surgeon")
-def survey_surgeon_page():
-    return
-    # return render_template('survey_surgeon.html')
-
-# shows patient a distribution and where their risk is on that
-@app.route("/survey/results")
-def survey_results_page():
-    return
-    # return render_template('survey_results.html')
-
 # admin page: allows importing new data, exporting existing training data, show metrics on the data
-@app.route("/admin")
+@app.route("/admin", methods=["GET"])
 def admin_page():
-    # Process data into graphics
-    return
-    # return render_template('admin.html')
+    # Create a figure and a set of subplots
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)) = plt.subplots(nrows=5, ncols=2, figsize=(14, 30))
+    axes = [ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10]
+
+    # Create age subplot
+    sns.histplot(odi_quality_df['age'], ax=axes[0])
+    axes[0].set_xlabel("Age")
+    axes[0].set_title("US Population Age")
+
+    # Create bmi subplot
+    sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
+    axes[1].set_xlabel("BMI")
+    axes[1].set_title("US Population BMI")
+
+    # Create ADI national ranking subplot
+    sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=50)
+    axes[2].set_xlabel("ADI National Ranking")
+    axes[2].set_yticks(range(0, 21, 4))
+    axes[2].set_xticks([1] + list(range(10, 101, 10)))
+    axes[2].set_xticklabels(["1"] + [str(n) for n in range(10, 101, 10)])
+    axes[2].set_title("US Population ADI")
+
+    # Create odi subplot
+    sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
+    axes[3].set_xlabel("ODI")
+    axes[3].set_title("US Population ODI")
+
+    # Create DOSPERT Ethical subplot
+    sns.histplot(odi_quality_df['dospert_ethical'], ax = axes[4])
+    axes[4].set_xlabel("DOSPERT Ethical (6-42)")
+    axes[4].set_title("US Population DOSPERT Ethical")
+
+    # Create DOSPERT Financial subplot
+    sns.histplot(odi_quality_df['dospert_financial'], ax = axes[5])
+    axes[5].set_xlabel("DOSPERT Financial (6-42)")
+    axes[5].set_title("US Population DOSPERT Financial")
+
+    # Create DOSPERT Health/Safety subplot
+    sns.histplot(odi_quality_df['dospert_health/safety'], ax = axes[6])
+    axes[6].set_xlabel("DOSPERT Health/Safety (6-42)")
+    axes[6].set_title("US Population DOSPERT Health/Safety")
+
+    # Create DOSPERT Recreational subplot
+    sns.histplot(odi_quality_df['dospert_recreational'], ax = axes[7])
+    axes[7].set_xlabel("DOSPERT Recreational (6-42)")
+    axes[7].set_title("US Population DOSPERT Recreational")
+
+    # Create DOSPERT Social subplot
+    sns.histplot(odi_quality_df['dospert_social'], ax = axes[8])
+    axes[8].set_xlabel("DOSPERT Social (6-42)")
+    axes[8].set_title("US Population DOSPERT Social")
+
+    # Create spinal risk score subplot
+    sns.histplot(odi_quality_df['spinal_risk_score'], ax = axes[9])
+    axes[9].set_xlabel("Spinal Risk Score (0-1)")
+    axes[9].set_title("US Population Risk Score")
+
+    plt.tight_layout()
+
+    # prepare the demographics plot to be sent to the frontend
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    plt.close()  
+    buf.seek(0)
+    demo_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    
+    return jsonify({'demo_plot': demo_base64})
 
 @app.route('/generate-plot', methods=['POST'])
 @cross_origin()
