@@ -12,7 +12,7 @@ This repository contains the code and resources for developing a predictive mode
 ![image](https://github.com/evanyfyip/vm-spinal-risk/assets/50302514/1c4ec4d7-31f6-4a95-81cb-dd489915c31d)
 
 
-### Project Aims:
+## Project Aims:
 **Aim 0: Data collection and design** <br>
 We will design a survey that will be put onto a crowdsourcing platform such as MTurk, CloudResearch, or Prolific. The survey will give us insight into how the general public feels about undergoing surgery based on risk factors.
 
@@ -30,32 +30,6 @@ Feature Importance: SHAP values <br>
 
 **Aim 4: Building a Web Application** <br>
 The Goal: To build a interactive tool for Spinal surgeons and patients to interact with.
-
-## Installation
-### First, ensure system packages are installed:
-- conda: [Link to Install Page](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
-   - Scroll down to regular installation
-- nodejs: [Link to Install Page](https://nodejs.org/en/download)
-   - In the installation wizard, make sure npm is also installed
-
-### Second, execute the following commands in a conda terminal (search for "Anaconda Prompt (anaconda3)") to install all project dependencies:
-```bash
-conda create -n vm-spinal-risk python=3.8.18 -y
-conda activate vm-spinal-risk
-git clone https://github.com/evanyfyip/vm-spinal-risk.git
-cd vm-spinal-risk
-pip install -r requirements.txt
-cd risk-web-app
-npm install
-```
-If you have an `ssh` key set up in GitHub, you can also clone the repository using `git clone git@github.com:evanyfyip/vm-spinal-risk.git`
-
-### Lastly, to start the app, you need two conda terminals - one to run the frontend and one to run the backend. Ensure the current directory of both terminals are `…/vm-spinal-risk/risk-web-app/` and both terminals have the conda environment activated (step 2 of the previous section)
-- Frontend:
-   - `npm start`
-- Backend:
-   - `cd api`
-   - `flask run --no-debugger -h localhost -p 5001`
 
 ## Project Structure
 The project is organized into three main directories:
@@ -91,32 +65,47 @@ Below is a more detailed look into the `/risk-web-app` and `/vm-spinal-risk` com
 #### `/node_modules`
 This directory is managed by npm and should not be manually modified. It contains dependencies necessary for the web application's development and runtime. Due to its size, it's typically not included in version control (excluded via `.gitignore`).
 
-## Usage -  NEEDS TO BE UPDATED
 
-To use the spinal risk assessment model, follow these steps:
+## Installation
+#### Step 1: Ensure system packages are installed:
+- conda: [Link to Install Page](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+   - Scroll down to regular installation
+- nodejs: [Link to Install Page](https://nodejs.org/en/download)
+   - In the installation wizard, make sure npm is also installed
 
-### Downloads:
-a. Download conda <br>
-b. Download npm <br>
+#### Step 2: execute the following commands in a conda terminal (search for "Anaconda Prompt (anaconda3)") to install all project dependencies:
+```bash
+conda create -n vm-spinal-risk python=3.8.18 -y
+conda activate vm-spinal-risk
+git clone https://github.com/evanyfyip/vm-spinal-risk.git
+cd vm-spinal-risk
+pip install -r requirements.txt
+cd risk-web-app
+npm install
+```
+If you have an `ssh` key set up in GitHub, you can also clone the repository using `git clone git@github.com:evanyfyip/vm-spinal-risk.git`
 
-### Environment setup:
-1. conda create -n vm-spinal-risk python=3.8.18 -y
-2. conda activate vm-spinal-risk
-3. git clone https://github.com/evanyfyip/vm-spinal-risk.git
-Use ssh if you have an ssh key set up: git clone git@github.com:evanyfyip/vm-spinal-risk.git
-5. cd vm-spinal-risk
-6. Obtain API key from zipcode <br>
-   1. Create an account [here](https://app.zipcodebase.com/register) <br>
-   2. Generate an API key <br>
-   3. Store API key in a .env file in the root directory<br>
-      - *Note: Name it ZIPCODE_API_KEY=`your-api-key`*
-7. pip install -r requirements.txt
-8. cd risk-web-app
-9. npm install
+#### Step 3: Obtain Zipcode API key
+Obtain API key from zipcode <br>
+1. Create an account [here](https://app.zipcodebase.com/register) <br>
+2. Generate an API key <br>
+3. Store API key in a `.env` file in the root directory<br>
+   - *Note: Name it ZIPCODE_API_KEY=`your-api-key`*
 
-### Use case 1: Running the web application locally
-
-### Use case 2: Recreating processed data and ML models
+## Usage
+#### Use case 1: Running the web application locally
+To start the app, you need two conda terminals - one to run the frontend and one to run the backend. Ensure the current directory of both terminals are `…/vm-spinal-risk/risk-web-app/` and both terminals have the conda environment activated (step 2 of the previous section)
+- Frontend:
+  ```bash
+  npm start
+  ```
+- Backend:
+  ```bash
+  cd api
+  flask run --no-debugger -h localhost -p 5001
+  ```
+A browser should open up so that you can interact with the web application.
+#### Use case 2: Recreating processed data and ML models
 1. **Preprocess Data:**
    - **Note:** If you don't care to recreate the processed data and pipelines, SKIP THIS STEP.
    - This step only needs to be done if you want to recreate the steps to produce `data_processed/all_risk_processed.csv`.
