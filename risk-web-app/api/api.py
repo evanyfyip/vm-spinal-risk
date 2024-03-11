@@ -112,7 +112,7 @@ def survey_page():
     print(f"predicted patient risk score: {pred_risk[0]}")
 
     # Create a figure and a set of subplots
-    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)) = plt.subplots(nrows=5, ncols=2, figsize=(14, 30))
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)) = plt.subplots(nrows=5, ncols=2, figsize=(8, 15))
     axes = [ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10]
 
     # Create age subplot
@@ -186,6 +186,7 @@ def survey_page():
     plt.close()  
     buf.seek(0)
     demo_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+
 
     # prepare the choice model shap plot to be sent to the frontend
     shap.plots.bar(choice_shap_values, show=False)

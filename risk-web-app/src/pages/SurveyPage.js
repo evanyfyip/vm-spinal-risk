@@ -52,10 +52,22 @@ function SurveyPage() {
       {isSurveyCompleted && (
         <>
           <Fragment>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{messageOutput}</div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{demoPlot && <img src={demoPlot} alt="Demographics Plot" />}</div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{choiceShapPlot && <img src={choiceShapPlot} alt="Choice Model SHAP Values Plot" />}</div>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{riskShapPlot && <img src={riskShapPlot} alt="Risk Model SHAP Values Plot" />}</div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
+              <h1>Model Results:</h1>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '60vw', margin: 0 }}>{messageOutput}</div>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '60vw', margin: 0 , paddingTop: '10px', paddingBottom: '10px'}}></div>
+            </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '60vw'}}>{demoPlot && <img src={demoPlot} alt="Demographics Plot" />}</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '60vw' }}>{choiceShapPlot && <img src={choiceShapPlot} alt="Choice Model SHAP Values Plot" />}</div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '60vw' }}>{riskShapPlot && <img src={riskShapPlot} alt="Risk Model SHAP Values Plot" />}</div>
+            </div>
           </Fragment>
         </>
       )
