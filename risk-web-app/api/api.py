@@ -8,7 +8,6 @@ os.chdir(utilitiesRootDir)
 
 # standard modules
 import pandas as pd
-import time
 import importlib
 import matplotlib
 matplotlib.use('Agg')
@@ -111,24 +110,23 @@ def survey_patient_page():
     print(f"predicted patient risk score: {pred_risk[0]}")
 
     # Create a figure and a set of subplots
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(14, 10))
-    axes = [ax1, ax2, ax3, ax4]
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)) = plt.subplots(nrows=5, ncols=2, figsize=(14, 30))
+    axes = [ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10]
 
-    # create plots
+    # Create age subplot
     sns.histplot(odi_quality_df['age'], ax=axes[0])
-    sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
-    sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=50)
-    sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
-        
-    # adjust the labels of the figure
     axes[0].set_xlabel("Age")
     axes[0].set_title("US Population Age")
     axes[0].axvline(x=df_features["age"][0], color = 'r')
 
+    # Create bmi subplot
+    sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
     axes[1].set_xlabel("BMI")
     axes[1].set_title("US Population BMI")
     axes[1].axvline(x=df_features["bmi"][0], color = 'r')
 
+    # Create ADI national ranking subplot
+    sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=50)
     axes[2].set_xlabel("ADI National Ranking")
     axes[2].set_yticks(range(0, 21, 4))
     axes[2].set_xticks([1] + list(range(10, 101, 10)))
@@ -136,9 +134,47 @@ def survey_patient_page():
     axes[2].set_title("US Population ADI")
     axes[2].axvline(x=int(df_features["ADI_NATRANK"][0]), color = 'r')
 
+    # Create odi subplot
+    sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
     axes[3].set_xlabel("ODI")
     axes[3].set_title("US Population ODI")
     axes[3].axvline(x=df_features["odi_final"][0], color = 'r')
+
+    # Create DOSPERT Ethical subplot
+    sns.histplot(odi_quality_df['dospert_ethical'], ax = axes[4])
+    axes[4].set_xlabel("DOSPERT Ethical (6-42)")
+    axes[4].set_title("US Population DOSPERT Ethical")
+    axes[4].axvline(x=df_features["dospert_ethical"][0], color = 'r')
+
+    # Create DOSPERT Financial subplot
+    sns.histplot(odi_quality_df['dospert_financial'], ax = axes[5])
+    axes[5].set_xlabel("DOSPERT Financial (6-42)")
+    axes[5].set_title("US Population DOSPERT Financial")
+    axes[5].axvline(x=df_features["dospert_financial"][0], color = 'r')
+
+    # Create DOSPERT Health/Safety subplot
+    sns.histplot(odi_quality_df['dospert_health/safety'], ax = axes[6])
+    axes[6].set_xlabel("DOSPERT Health/Safety (6-42)")
+    axes[6].set_title("US Population DOSPERT Health/Safety")
+    axes[6].axvline(x=df_features["dospert_health/safety"][0], color = 'r')
+
+    # Create DOSPERT Recreational subplot
+    sns.histplot(odi_quality_df['dospert_recreational'], ax = axes[7])
+    axes[7].set_xlabel("DOSPERT Recreational (6-42)")
+    axes[7].set_title("US Population DOSPERT Recreational")
+    axes[7].axvline(x=df_features["dospert_recreational"][0], color = 'r')
+
+    # Create DOSPERT Social subplot
+    sns.histplot(odi_quality_df['dospert_social'], ax = axes[8])
+    axes[8].set_xlabel("DOSPERT Social (6-42)")
+    axes[8].set_title("US Population DOSPERT Social")
+    axes[8].axvline(x=df_features["dospert_social"][0], color = 'r')
+
+    # Create spinal risk score subplot
+    sns.histplot(odi_quality_df['spinal_risk_score'], ax = axes[9])
+    axes[9].set_xlabel("Spinal Risk Score (0-1)")
+    axes[9].set_title("US Population Risk Score")
+    axes[9].axvline(x=pred_risk[0], color = 'r')
 
     plt.tight_layout()
 
@@ -169,6 +205,7 @@ def survey_patient_page():
     buf.seek(0)
     risk_shap_plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 
+    # construct message output for the patient
     message_output = f"""For a surgical scenario that has {df_features["pct_improv"][0]}% chance of improvement
         from {activity_registry[df_features["activity"][0]]}
         and a {df_features["pct_comp"][0]}% chance
