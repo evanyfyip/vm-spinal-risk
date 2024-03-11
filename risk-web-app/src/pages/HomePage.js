@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Hero from '../components/hero';
-import { Grid, Card, CardContent, Typography, Button } from '@mui/material';
+import { Grid, Card, CardContent, Typography } from '@mui/material';
 import QuestionsHero from '../components/questionsHero';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -50,8 +50,8 @@ function FeaturesSection() {
                 {feature.id === 1 ? (
                     <>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                      <img src={'/uwlogo.png'} alt="uw image" style={{ width: '100px', marginBottom: '10px' }} />
-                      <img src={'/virginiamason.png'} alt="vm image" style={{ width: '100px', marginBottom: '10px' }} />
+                      <img src={'/uwlogo.png'} alt="uw image" style={{ width: '100px', marginBottom: '0px'}} />
+                      <img src={'/virginiamason.png'} alt="vm image" style={{ width: '100px', marginBottom: '0px' }} />
                     </div>
                     </>
                   ) : (
