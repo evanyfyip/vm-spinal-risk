@@ -217,14 +217,14 @@ def survey_page():
         {sex_registry[df_features["sex"][0]]}
         with an ODI of {int(df_features["odi_final"][0])},
         BMI of {df_features["bmi"][0]:.2f},
-        ADI of {df_features["ADI_NATRANK"][0]},
+        ADI National Rank of {df_features["ADI_NATRANK"][0]},
         an annual salary of {income_registry[df_features["income"][0]]},
-        dospert ethical 90%,
-        dospert financial 80%,
-        dospert health 90%,
-        dospert recreational 10%,
-        dospert social 30%,
-        risk score of {pred_risk[0]:.2f},
+        DOSPERT ethical {(df_features["dospert_ethical"][0]-6)/36*100:.2f}%,
+        DOSPERT financial {(df_features["dospert_financial"][0]-6)/36*100:.2f}%,
+        DOSPERT health/safety {(df_features["dospert_health/safety"][0]-6)/36*100:.2f}%,
+        DOSPERT recreational {(df_features["dospert_recreational"][0]-6)/36*100:.2f}%,
+        DOSPERT social {(df_features["dospert_social"][0]-6)/36*100:.2f}%,
+        and a risk score of {pred_risk[0]:.2f} out of 1,
         the likelihood of choosing surgery is {pred_choice[0]:.2f}%."""
     return jsonify({'demo_plot': demo_base64, 'choice_plot': choice_shap_plot_base64, 'risk_plot': risk_shap_plot_base64, 'message': message_output})
 
