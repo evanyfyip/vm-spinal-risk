@@ -4,21 +4,32 @@
 
 This repository contains the code and resources for developing a predictive model for spinal risk assessments. The goal is to create a machine learning model that can accurately predict potential spinal surgery candidates assessment of spinal surgery risk given demographics, ODI, general risk assessments etc.
 
-**Aim 0: Data collection and design**
+### Web Application Screenshots:
+#### Home Page
+![image](https://github.com/evanyfyip/vm-spinal-risk/assets/50302514/692e35ec-cacc-424f-9626-4cdba83df21e)
+
+#### Results Page
+![image](https://github.com/evanyfyip/vm-spinal-risk/assets/50302514/1c4ec4d7-31f6-4a95-81cb-dd489915c31d)
+
+
+### Project Aims:
+**Aim 0: Data collection and design** <br>
 We will design a survey that will be put onto a crowdsourcing platform such as MTurk, CloudResearch, or Prolific. The survey will give us insight into how the general public feels about undergoing surgery based on risk factors.
 
-**Aim 1: Exploratory Analysis -  ODI Distribution**
-A presentation of Age-based variations (per decade) of the "baseline" Oswestry Disability Index (ODI - which is a gold standard patient-reported outcome survey) in the general population. This will serve as an introduction to crowdsourcing platforms and establish important baseline data to help drive our future questions.
+**Aim 1: Exploratory Analysis -  ODI Distribution** <br>
+A presentation of Age-based variations (per decade) of the "baseline" Oswestry Disability Index (ODI - which is a gold standard patient-reported outcome survey) in the general population. This will serve as an introduction to crowdsourcing platforms and establish important baseline data to help drive our future questions. <br>
 
-**Aim 2: Risk score correlations**
-A model that demonstrates the relationship between a person's "risk" (financial, recreational activities, etc...) and their risk-taking attitudes towards their own health (spine care).
+**Aim 2: Risk score correlations** <br>
+A model that demonstrates the relationship between a person's "risk" (financial, recreational activities, etc...) and their risk-taking attitudes towards their own health (spine care). <br>
 Modeling: Linear regression, correlation coefficient
 
-**Aim 3: Predicting health (spinal) risk**
-The Goal: An algorithmic tool that allows us to collect several factors including socio-economic status, risk, expectations, medical comorbidities, etc. --- and provides us with some sort of score/percentage that places them into a specific treatment recommendation category (we will work on these categories). We can then apply this model to our patients to validate the model and tune parameters for the best fit.
-Modeling: Linear Regression, Decision tree, XGBoost, Random Forest, Bayesian modeling
+**Aim 3: Predicting health (spinal) risk** <br>
+The Goal: An algorithmic tool that allows us to collect several factors including socio-economic status, risk, expectations, medical comorbidities, etc. --- and provides us with some sort of score/percentage that places them into a specific treatment recommendation category (we will work on these categories). We can then apply this model to our patients to validate the model and tune parameters for the best fit. <br>
+Modeling: Linear Regression, Decision tree, XGBoost, Random Forest, Bayesian modeling <br>
+Feature Importance: SHAP values <br>
 
-Feature Importance: SHAP values
+**Aim 4: Building a Web Application** <br>
+The Goal: To build a interactive tool for Spinal surgeons and patients to interact with.
 
 ## Installation
 ### First, ensure system packages are installed:
