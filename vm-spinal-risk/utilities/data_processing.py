@@ -43,7 +43,7 @@ def filter_df_by_attention_check(data, col_start, col_end, tol, remove=False):
 
 
 height_registry = {
-# 0: [< "4'0", "four feet", <121.92],
+0: ["<4'0", "four feet", 121.92],
 1: ["4'1", "four feet, one inch", 124.46],
 2: ["4'2", "four feet, two inches", 126.99],
 3: ["4'3", "four feet, three inches", 129.54],
@@ -80,7 +80,7 @@ height_registry = {
 34: ["6'10", "six feet, ten inches", 208.28],
 35: ["6'11", "six feet, eleven inches", 210.82],
 36: ["7'0", "seven feet", 213.36],
-# 37: [>"7'0" (seven feet", >213.36],
+37: [">7'0", "seven feet", 213.36],
 }
 
 def get_height_value(value, registry=height_registry, unit='metric'):
@@ -96,12 +96,12 @@ def get_height_value(value, registry=height_registry, unit='metric'):
     except Exception as e:
         raise Exception(f"An unexpected error occurred: {e}")
     
-def get_weight_value(value, unit='metric', starting_value=90):
+def get_weight_kg_value(value, input_unit='lbs', starting_value=90):
     weight = value + starting_value
     try:
-        if unit == 'metric':
+        if input_unit == 'lbs':
             return weight*0.453592 # Converting to kg
-        elif unit == 'imperial':
+        elif input_unit == 'kgs':
             return weight
         else:
             raise ValueError("Invalid unit. Supported units are 'metric' and 'imperial'")
@@ -431,7 +431,7 @@ def get_data_features(df):
     features_df = get_odi_score(df)
     features_df = get_dospert_scores(features_df)
     features_df['height_m'] = features_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
-    features_df['weight_kg'] = features_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    features_df['weight_kg'] = features_df.weight.apply(lambda w: get_weight_kg_value(value=w, input_unit='lbs', starting_value=0))
     features_df['bmi'] = features_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
     features_df = get_age_ranges(features_df, age_column='age')
     features_df = get_location_information(features_df)
@@ -518,7 +518,7 @@ def main():
     processed_df = get_odi_score(processed_df)
     processed_df = get_dospert_scores(processed_df)
     processed_df['height_m'] = processed_df.height.apply(lambda h: get_height_value(value=h, unit='metric'))/100
-    processed_df['weight_kg'] = processed_df.weight.apply(lambda h: get_weight_value(value=h, unit='metric'))
+    processed_df['weight_kg'] = processed_df.weight.apply(lambda w: get_weight_kg_value(value=w, input_unit='lbs', starting_value=90))
     processed_df['bmi'] = processed_df[['height_m', 'weight_kg']].apply(lambda row: compute_bmi(row.height_m, row.weight_kg), axis=1)
     processed_df = get_age_ranges(processed_df, age_column='age')
     processed_df = get_location_information(processed_df)
