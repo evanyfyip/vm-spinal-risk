@@ -90,6 +90,30 @@ income_registry = {
     18: "Prefer not to say" 
 }
 
+# create a registry of the shap plot y tick labels to make them more clear
+y_tick_registry = {
+    "pct_comp": "Percent Chance of Complication",
+    "pct_improv": "Percent Chance of Improvement",
+    "comp_drop": "Complication is Foot Drop",
+    "comp_para": "Complication is Paralysis",
+    "comp_death": "Complication is Death",
+    "activity_work": "Work is Improved",
+    "activity_exer": "Exercise is Improved",
+    "dospert_ethical": "DOSPERT Ethical",
+    "dospert_financial": "DOSPERT Financial",
+    "dospert_health/safety": "DOSPERT Health/Safety",
+    "dospert_recreational": "DOSPERT Recreational",
+    "dospert_social": "DOSPERT Social",
+    "ADI_NATRANK": "ADI National Rank",
+    "bmi": "BMI",
+    "odi_final": "ODI",
+    "prior_surg": "Had Prior Surgery",
+    "spin_surg": "Prior Surgery was Spinal",
+    "succ_surg": "Prior Surgery was Successful",
+    "weight_kg": "Weight (kg)",
+    "height_m": "Height (m)"
+}
+
 # the results from the preoperation survey including ODI, dospert, etc. is input into the model,
 # model sends back predictions and distribution images for demographics, dospert, and risk. 
 @app.route("/survey", methods=["POST"])
@@ -108,8 +132,8 @@ def survey_page():
     # create model predictions
     pred_choice, choice_shap_values = predict_choice_model(df_features)
     pred_risk, risk_shap_values = predict_risk_model(df_features)
-    print(f"probability of patient proceeding with surgery: {pred_choice[0]}")
-    print(f"predicted patient risk score: {pred_risk[0]}")
+    # print(f"probability of patient proceeding with surgery: {pred_choice[0]}")
+    # print(f"predicted patient risk score: {pred_risk[0]}")
 
     # Create a figure and a set of subplots
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10)) = plt.subplots(nrows=5, ncols=2, figsize=(8, 15))
@@ -120,12 +144,15 @@ def survey_page():
     axes[0].set_xlabel("Age")
     axes[0].set_title("US Population Age")
     axes[0].axvline(x=df_features["age"][0], color = 'r')
+    axes[0].text(df_features["age"][0], 0.99, df_features["age"][0], color='r', ha='right', va='top', rotation=90, transform=axes[0].get_xaxis_transform(), weight='bold')
 
     # Create bmi subplot
     sns.histplot(odi_quality_df['bmi'].sort_values(), ax=axes[1])
     axes[1].set_xlabel("BMI")
     axes[1].set_title("US Population BMI")
     axes[1].axvline(x=df_features["bmi"][0], color = 'r')
+    axes[1].text(df_features["bmi"][0], 0.99, round(df_features["bmi"][0]), color='r', ha='right', va='top', rotation=90, transform=axes[1].get_xaxis_transform(), weight='bold')
+
 
     # Create ADI national ranking subplot
     sns.histplot(pd.to_numeric(odi_quality_df['adi_score'], errors='coerce').dropna(), ax=axes[2], bins=50)
@@ -135,48 +162,64 @@ def survey_page():
     axes[2].set_xticklabels(["1"] + [str(n) for n in range(10, 101, 10)])
     axes[2].set_title("US Population ADI")
     axes[2].axvline(x=int(df_features["ADI_NATRANK"][0]), color = 'r')
+    axes[2].text(int(df_features["ADI_NATRANK"][0]), 0.99, df_features["ADI_NATRANK"][0], color='r', ha='right', va='top', rotation=90, transform=axes[2].get_xaxis_transform(), weight='bold')
+
 
     # Create odi subplot
     sns.histplot(odi_quality_df['odi_final'].sort_values(), ax=axes[3])
     axes[3].set_xlabel("ODI")
     axes[3].set_title("US Population ODI")
     axes[3].axvline(x=df_features["odi_final"][0], color = 'r')
+    axes[3].text(df_features["odi_final"][0], 0.99, round(df_features["odi_final"][0]), color='r', ha='right', va='top', rotation=90, transform=axes[3].get_xaxis_transform(), weight='bold')
+
 
     # Create DOSPERT Ethical subplot
     sns.histplot(odi_quality_df['dospert_ethical'], ax = axes[4])
     axes[4].set_xlabel("DOSPERT Ethical (6-42)")
     axes[4].set_title("US Population DOSPERT Ethical")
     axes[4].axvline(x=df_features["dospert_ethical"][0], color = 'r')
+    axes[4].text(df_features["dospert_ethical"][0], 0.99, df_features["dospert_ethical"][0], color='r', ha='right', va='top', rotation=90, transform=axes[4].get_xaxis_transform(), weight='bold')
+
 
     # Create DOSPERT Financial subplot
     sns.histplot(odi_quality_df['dospert_financial'], ax = axes[5])
     axes[5].set_xlabel("DOSPERT Financial (6-42)")
     axes[5].set_title("US Population DOSPERT Financial")
     axes[5].axvline(x=df_features["dospert_financial"][0], color = 'r')
+    axes[5].text(df_features["dospert_financial"][0], 0.99, df_features["dospert_financial"][0], color='r', ha='right', va='top', rotation=90, transform=axes[5].get_xaxis_transform(), weight='bold')
+
 
     # Create DOSPERT Health/Safety subplot
     sns.histplot(odi_quality_df['dospert_health/safety'], ax = axes[6])
     axes[6].set_xlabel("DOSPERT Health/Safety (6-42)")
     axes[6].set_title("US Population DOSPERT Health/Safety")
     axes[6].axvline(x=df_features["dospert_health/safety"][0], color = 'r')
+    axes[6].text(df_features["dospert_health/safety"][0], 0.99, df_features["dospert_health/safety"][0], color='r', ha='right', va='top', rotation=90, transform=axes[6].get_xaxis_transform(), weight='bold')
+
 
     # Create DOSPERT Recreational subplot
     sns.histplot(odi_quality_df['dospert_recreational'], ax = axes[7])
     axes[7].set_xlabel("DOSPERT Recreational (6-42)")
     axes[7].set_title("US Population DOSPERT Recreational")
     axes[7].axvline(x=df_features["dospert_recreational"][0], color = 'r')
+    axes[7].text(df_features["dospert_recreational"][0], 0.99,df_features["dospert_recreational"][0], color='r', ha='right', va='top', rotation=90, transform=axes[7].get_xaxis_transform(), weight='bold')
+
 
     # Create DOSPERT Social subplot
     sns.histplot(odi_quality_df['dospert_social'], ax = axes[8])
     axes[8].set_xlabel("DOSPERT Social (6-42)")
     axes[8].set_title("US Population DOSPERT Social")
     axes[8].axvline(x=df_features["dospert_social"][0], color = 'r')
+    axes[8].text(df_features["dospert_social"][0], 0.99, df_features["dospert_social"][0], color='r', ha='right', va='top', rotation=90, transform=axes[8].get_xaxis_transform(), weight='bold')
+
 
     # Create spinal risk score subplot
     sns.histplot(odi_quality_df['spinal_risk_score'], ax = axes[9])
     axes[9].set_xlabel("Spinal Risk Score (0-1)")
     axes[9].set_title("US Population Risk Score")
     axes[9].axvline(x=pred_risk[0], color = 'r')
+    axes[9].text(pred_risk[0], 0.99, round(pred_risk[0], 2), color='r', ha='right', va='top', rotation=90, transform=axes[9].get_xaxis_transform(), weight='bold')
+
 
     plt.tight_layout()
 
@@ -187,9 +230,11 @@ def survey_page():
     buf.seek(0)
     demo_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 
-
     # prepare the choice model shap plot to be sent to the frontend
     shap.plots.bar(choice_shap_values, show=False)
+    current_y_labels = plt.gca().get_yticklabels()
+    new_y_labels = [y_tick_registry.get(label.get_text(), str(label.get_text()).capitalize()) for label in current_y_labels]
+    plt.gca().set_yticklabels(new_y_labels)
     plt.title("Choice Prediction for Given Risk Scenario SHAP Values")
     plt.tight_layout()
     buf = BytesIO()
@@ -200,6 +245,9 @@ def survey_page():
 
     # prepare the choice model shap plot to be sent to the frontend
     shap.plots.bar(risk_shap_values, show=False)
+    current_y_labels = plt.gca().get_yticklabels()
+    new_y_labels = [y_tick_registry.get(label.get_text(), str(label.get_text()).capitalize()) for label in current_y_labels]
+    plt.gca().set_yticklabels(new_y_labels)
     plt.title("Risk Score Prediction SHAP Values")
     plt.tight_layout()
     buf = BytesIO()
